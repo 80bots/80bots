@@ -1,0 +1,126 @@
+FROM php:7.4-fpm
+LABEL Description="saas-laravel + puppeteer container"
+
+ARG SSH_KEY_PATH
+
+# Set working directory
+WORKDIR /var/www
+
+# Install PHP dependencies
+RUN apt-get update
+RUN apt-get install -y libmcrypt-dev
+RUN apt-get install -y default-mysql-client
+RUN apt-get install -y libpspell-dev
+RUN apt-get install -y freetds-dev
+RUN apt-get install -y unixodbc unixodbc-dev
+RUN apt-get install -y libxslt-dev
+RUN apt-get install -y libxml2-dev
+RUN apt-get install -y libldap2-dev
+RUN apt-get install -y libmagickwand-dev --no-install-recommends
+RUN apt-get install -y build-essential
+RUN apt-get install -y libpq-dev
+RUN apt-get install -y libbz2-dev
+RUN apt-get install -y libonig-dev
+RUN apt-get install -y libpng-dev
+RUN apt-get install -y libzip-dev
+RUN apt-get install -y libjpeg62-turbo-dev
+RUN apt-get install -y libfreetype6-dev
+RUN apt-get install -y libgmp-dev
+RUN apt-get install -y libtidy-dev
+RUN apt-get install -y locales
+RUN apt-get install -y zip
+RUN apt-get install -y jpegoptim optipng pngquant gifsicle
+RUN apt-get install -y vim
+RUN apt-get install -y unzip
+RUN apt-get install -y git
+RUN apt-get install -y curl
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install bz2 \
+    && docker-php-ext-install calendar \
+    && docker-php-ext-install bcmath \
+    && docker-php-ext-install dba \
+    && docker-php-ext-install gettext \
+    && docker-php-ext-install gmp \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install exif \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install pcntl \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install opcache \
+    #&& docker-php-ext-install oci8 \
+    #&& docker-php-ext-install odbc \
+    #&& docker-php-ext-install pdo_dblib \
+    #&& docker-php-ext-install pdo_oci \
+    #&& docker-php-ext-install pdo_odbc \
+    #&& docker-php-ext-install pgsql \
+    && docker-php-ext-install pspell \
+    && docker-php-ext-install shmop \
+    && docker-php-ext-install soap \
+    && docker-php-ext-install sockets \
+    && docker-php-ext-install sysvmsg \
+    && docker-php-ext-install sysvsem \
+    && docker-php-ext-install sysvshm \
+    && docker-php-ext-install tidy \
+    && docker-php-ext-install xmlrpc \
+    && docker-php-ext-install xsl
+
+#PHP XDebug ext
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+#PHP Redis ext
+RUN pecl install -o -f redis \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis
+
+#PHP gd ext
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+#PHP imagick ext
+RUN rm -rf /var/lib/apt/lists/* \
+    && printf "\n" | pecl install imagick \
+    && docker-php-ext-enable imagick
+
+#PHP ldap ext
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
+    && docker-php-ext-install ldap
+
+#PHP mailparse
+RUN pecl install mailparse \
+    && docker-php-ext-enable mailparse
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+RUN groupadd -g 1000 www \
+    && useradd -u 1000 -ms /bin/bash -g www www
+
+#Authorize SSH host
+RUN mkdir ${HOME}/.ssh \
+    && chmod 700 ${HOME}/.ssh \
+    && ssh-keyscan github.com > ${HOME}/.ssh/known_hosts
+
+# Change current user to www
+USER www
+
+# Add keys and set permissions
+COPY $SSH_KEY_PATH ${HOME}/.ssh/id_rsa
+#
+#RUN echo ${cat ${HOME}/.ssh/id_rsa} && exit -1
+#RUN chmod 400 ${HOME}/.ssh/id_rsa
+#
+## Clone existing application contents
+#RUN git clone git@github.com:80bots/saas-laravel.git
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
