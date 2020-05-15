@@ -1,30 +1,79 @@
 version: '3'
 services:
+  # Laravel App
   app:
+    container_name: 80bots-app
     build:
       context: ./
-      dockerfile: app/Dockerfile
+      dockerfile: docker-compose/app/Dockerfile
       args:
-        SSH_KEY_PATH: "${SSH_PRIVATE_KEY_RELATIVE_PATH}"
+        ENV: "${ENV}"
+        SSH_KEY_PATH: "${SSH_PRIVATE_KEY_PATH}"
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
     volumes:
-      - ./:/var/www
-
+      - ./docker-compose/saas-laravel:/var/sources/app
     links:
-      - database
+      - mysql-db
       - redis
-    environment:
-      - "DB_PORT=3306"
-      - "DB_HOST=localhost"
-      - "REDIS_PORT=6379"
-      - "REDIS_HOST=127.0.0.1"
-  database:
-    image: mysql:5.7
-    environment:
-      - "MYSQL_ROOT_PASSWORD=root"
-      - "MYSQL_DATABASE=80bots"
     ports:
-      - "33061:3306"
+      - "8000:8000"
+    networks:
+      - app-network
+
+  # Nginx web server
+  webserver:
+    image: nginx:alpine
+    container_name: 80bots-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - app
+    volumes:
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - app-network
+    environment:
+      NGINX_HOST: "{NGINX_HOST}"
+      NGINX_PORT: "{NGINX_PORT}"
+      APP_HOST: app
+      APP_PORT: 9000
+      ERROR_LOG: "server.error.log"
+      ACCESS_LOG: "server.access.log"
+
+  # Primary DB - MySQL
+  mysql-db:
+    image: mysql:5.7
+    container_name: 80bots-mysql-db
+    environment:
+      - "MYSQL_DATABASE=80bots"
+      - "MYSQL_ROOT_PASSWORD=root"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker-compose/mysql:/etc/mysql/conf.d/
+    networks:
+      - app-network
+
+  # Redis
   redis:
     image: redis
+    container_name: 80bots-redis
+    restart: unless-stopped
+    tty: true
     ports:
-      - "63791:6379"
+      - "6379:6379"
+    volumes:
+      - ./docker-compose/redis:/etc/redis/conf.d/
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
