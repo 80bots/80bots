@@ -1,15 +1,8 @@
 FROM php:7.4-fpm
-LABEL Description="saas-laravel + puppeteer container"
-
-# Arguments
-ARG SSH_KEY_PATH
-ARG ENV_FILE_PATH
 
 # Environment variables
 ENV HOME /root
 ENV APP_ROOT /var/www/app
-
-WORKDIR /var/www
 
 # Install platform dependencies
 RUN apt-get update
@@ -44,7 +37,6 @@ RUN apt-get install -y curl
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-
 RUN docker-php-ext-install pdo_mysql \
     && docker-php-ext-install bz2 \
     && docker-php-ext-install calendar \
@@ -102,22 +94,22 @@ RUN pecl install mongodb \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Add keys and set permissions
-RUN mkdir $HOME/.ssh/
-COPY ${SSH_KEY_PATH} $HOME/.ssh/id_rsa
+COPY ./.ssh $HOME/.ssh
 
 RUN chmod 400 $HOME/.ssh/id_rsa
-RUN touch $HOME/.ssh/known_hosts
-RUN ssh-keyscan github.com >> $HOME/.ssh/known_hosts
+RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
+# TODO: Move all the following code into .sh command in order to make static Image
 # Clone existing application contents
-RUN git clone git@github.com:80bots/saas-laravel.git $APP_ROOT
+RUN git clone git@github.com:80bots/saas-laravel.git $APP_ROOT && cd $APP_ROOT && git pull
 
-COPY ${ENV_FILE_PATH} $APP_ROOT/.env
+# Setup env file
+COPY .env $APP_ROOT/.env
 
 # Install composer dependencies
-RUN cd $APP_ROOT && composer install
+RUN cd $APP_ROOT && composer install && php artisan cache:clear && php artisan config:clear && php artisan route:clear
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
-CMD ["php-fpm"]
+# Set API
+WORKDIR $APP_ROOT
+
+CMD php artisan serve --host=0.0.0.0 --port=8000
