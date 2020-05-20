@@ -111,5 +111,3 @@ RUN cd $APP_ROOT && composer install && php artisan cache:clear && php artisan c
 
 # Set API
 WORKDIR $APP_ROOT
-
-CMD php artisan serve --host=0.0.0.0 --port=8000
