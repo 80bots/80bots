@@ -2,8 +2,7 @@ FROM php:7.4-fpm
 
 # Environment variables
 ENV HOME /root
-ENV APP_ROOT /var/www/app
-
+COPY .env /var/www/source/.env
 # Install platform dependencies
 RUN apt-get update
 RUN apt-get install -y libmcrypt-dev
@@ -99,15 +98,14 @@ COPY ./.ssh $HOME/.ssh
 RUN chmod 400 $HOME/.ssh/id_rsa
 RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
-# TODO: Move all the following code into .sh command in order to make static Image
-# Clone existing application contents
-RUN git clone git@github.com:80bots/saas-laravel.git $APP_ROOT && cd $APP_ROOT && git pull
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
-# Setup env file
-COPY .env $APP_ROOT/.env
+COPY ./bin/start.sh /var/www/start.sh
+COPY ./bin/server.sh /var/www/server.sh
+COPY ./bin/update.sh /var/www/update.sh
+COPY ./bin/queue-worker.sh /var/www/queue-worker.sh
 
-# Install composer dependencies
-RUN cd $APP_ROOT && composer install && php artisan cache:clear && php artisan config:clear && php artisan route:clear
+RUN chmod 700 /var/www/*.sh
 
 # Set API
-WORKDIR $APP_ROOT
+WORKDIR /var/www

@@ -43,9 +43,11 @@ services:
   api:
     container_name: 80bots-api
     build:
-      context: ./docker-compose/api
-    command: php artisan serve --host=0.0.0.0 --port=8000
+      context: ./docker-compose/backend
+    command: /var/www/start.sh api
     restart: unless-stopped
+    volumes:
+      - ./docker-compose/backend/app:/var/www/app
     ports:
       - "8080:8000"
     links:
@@ -53,14 +55,20 @@ services:
       - redis
     networks:
       - app-network
+    depends_on:
+      - mysql
+      - redis
+      - ws
 
   # API
   # Image: ./docker-compose/api/Dockerfile
   worker:
     container_name: 80bots-worker
     build:
-      context: ./docker-compose/api
-    command: php artisan queue:work redis --tries=1
+      context: ./docker-compose/backend
+    command: /var/www/start.sh worker
+    volumes:
+      - ./docker-compose/backend/app:/var/www/app
     restart: unless-stopped
     links:
       - mysql
