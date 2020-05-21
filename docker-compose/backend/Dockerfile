@@ -1,5 +1,8 @@
 FROM php:7.4-fpm
 
+# Replace shell with bash so we can source files
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 # Environment variables
 ENV HOME /root
 COPY .env /var/www/source/.env
@@ -31,6 +34,15 @@ RUN apt-get install -y vim
 RUN apt-get install -y unzip
 RUN apt-get install -y git
 RUN apt-get install -y curl
+RUN apt-get install -y apt-utils
+RUN apt-get install -y systemd
+RUN apt-get install -y supervisor
+RUN apt-get install -y cron
+RUN apt-get install -y iputils-ping
+# Auxilary utils / Network management
+RUN apt-get install -y nano
+RUN apt-get install -y traceroute
+RUN apt-get install -y dnsutils
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -100,12 +112,14 @@ RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_h
 
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
-COPY ./bin/start.sh /var/www/start.sh
-COPY ./bin/server.sh /var/www/server.sh
-COPY ./bin/update.sh /var/www/update.sh
-COPY ./bin/queue-worker.sh /var/www/queue-worker.sh
+# Load cron script
+COPY ./cron/laravel-scheduler /etc/cron.d/laravel-scheduler
+RUN chmod 0644 /etc/cron.d/laravel-scheduler
 
+# Load start script
+COPY ./bin/start.sh /var/www/start.sh
 RUN chmod 700 /var/www/*.sh
+RUN touch /var/log/cron.log
 
 # Set API
 WORKDIR /var/www

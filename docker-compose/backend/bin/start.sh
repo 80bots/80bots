@@ -1,25 +1,21 @@
 #!/bin/bash
-startServer()
-{
-  echo "Starting the API server" && ./update.sh && ./server.sh
-}
+# Clone or pull the app
+if [ -d "/var/www/app/.git" ]
+  then
+    echo "Pulling from repository git@github.com:80bots/saas-laravel.git"
+    cd /var/www/app && git pull
+  else
+    echo "Cloning from repository git@github.com:80bots/saas-laravel.git"
+    cd /var/www/app && git clone git@github.com:80bots/saas-laravel.git .
+fi
 
-startWorker()
-{
-  echo "Starting the Laravel Queue worker" && ./update.sh && ./queue-worker.sh
-}
+cp /var/www/source/.env ./.env
 
-case "$1"
-  in
-    api)
-      startServer
-      ;;
+cd /var/www/app
 
-    worker)
-      startWorker
-      ;;
-    *)
-      echo "Sorry, the service is not specified or unsupported. Pass a valid arg for the running. Allowed values is: 'api' or 'worker'"
-      echo "Example: ./start.sh api"
-      exit 1
-esac
+composer install \
+  && php artisan cache:refresh \
+  && php artisan migrate \
+  && crontab /etc/cron.d/laravel-scheduler && service cron restart \
+  && service supervisor start \
+  && php artisan serve --host=0.0.0.0 --port=8000

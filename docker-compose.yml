@@ -48,6 +48,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./docker-compose/backend/app:/var/www/app
+      - ./docker-compose/backend/supervisor:/etc/supervisor
     ports:
       - "8080:8000"
     links:
@@ -59,23 +60,14 @@ services:
       - mysql
       - redis
       - ws
-
-  # API
-  # Image: ./docker-compose/api/Dockerfile
-  worker:
-    container_name: 80bots-worker
-    build:
-      context: ./docker-compose/backend
-    command: /var/www/start.sh worker
-    volumes:
-      - ./docker-compose/backend/app:/var/www/app
+      - mongodb
+  mongodb:
+    image: mongo
+    container_name: 80bots-mongo
     restart: unless-stopped
-    links:
-      - mysql
-      - redis
-    networks:
-      - app-network
-
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
   ws:
