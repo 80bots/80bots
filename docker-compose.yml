@@ -70,13 +70,17 @@ services:
       - redis
       - ws
       - mongodb
+
+  # MongoDB
+  # Image: https://hub.docker.com/_/mongo
   mongodb:
     image: mongo
     container_name: 80bots-mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_DB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_DB_PASSWORD}"
+      MONGO_INITDB_DATABASE: "${MONGO_DB_DATABASE}"
     networks:
       - app-network
   # Web Sockets based on Laravel Echo Server
