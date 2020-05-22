@@ -28,13 +28,10 @@ services:
     container_name: 80bots-web
     build:
       context: ./docker-compose/web
+    command: /var/www/start.sh
     restart: unless-stopped
-    environment:
-      PORT: 8000
-      API_URL: 'localhost:8080'
-      SOCKET_URL: 'localhost:6001'
-      STRIPE_PUBLIC_KEY: "{STRIPE_PUBLIC_KEY}"
-      SENTRY_DSN: "{SENTRY_DSN}"
+    volumes:
+      - ./docker-compose/web/app:/var/www/app
     networks:
       - app-network
 
@@ -44,7 +41,7 @@ services:
     container_name: 80bots-api
     build:
       context: ./docker-compose/backend
-    command: /var/www/start.sh api
+    command: /var/www/start.sh
     restart: unless-stopped
     volumes:
       - ./docker-compose/backend/app:/var/www/app
