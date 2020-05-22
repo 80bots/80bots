@@ -4,17 +4,24 @@ services:
   # Nginx proxy server
   # Image: https://hub.docker.com/_/nginx
   proxy:
-    image: nginx:alpine
+    image: nginx
     container_name: 80bots-proxy
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "${WEB_SERVER_PORT}:${WEB_SERVER_PORT}"
+      - "${API_SERVER_PORT}:${API_SERVER_PORT}"
+      - "${SOCKET_SERVER_PORT}:${SOCKET_SERVER_PORT}"
+    environment:
+      WEB_SERVER_HOST: "${WEB_SERVER_HOST}"
+      WEB_SERVER_PORT: "${WEB_SERVER_PORT}"
+      API_SERVER_HOST: "${API_SERVER_HOST}"
+      API_SERVER_PORT: "${API_SERVER_PORT}"
+      SOCKET_SERVER_HOST: "${SOCKET_SERVER_HOST}"
+      SOCKET_SERVER_PORT: "${SOCKET_SERVER_PORT}"
+    command: /bin/bash -c "envsubst < /etc/nginx/src/http-server.template.conf > /etc/nginx/conf.d/http-server.conf && exec nginx -g 'daemon off;'"
     volumes:
-      - ./docker-compose/proxy:/etc/nginx/conf.d/
-      - ./docker-compose/proxy/common_location.conf:/etc/nginx/common_location.conf
-      - ./docker-compose/proxy/common_sockets.conf:/etc/nginx/common_sockets.conf
-      - ./docker-compose/proxy/common.conf:/etc/nginx/common.conf
+      - ./docker-compose/proxy/src:/etc/nginx/src
+      - ./docker-compose/proxy/conf.d:/etc/nginx/conf.d
     links:
       - web
       - api
@@ -53,8 +60,6 @@ services:
     volumes:
       - ./docker-compose/backend/app:/var/www/app
       - ./docker-compose/backend/supervisor:/etc/supervisor
-    ports:
-      - "8080:8000"
     links:
       - mysql
       - redis
@@ -81,15 +86,15 @@ services:
     container_name: 80bots-ws
     restart: unless-stopped
     environment:
-      LARAVEL_ECHO_SERVER_DB: "{LARAVEL_ECHO_SERVER_DB}"
-      REDIS_HOST: "{REDIS_HOST}"
-      REDIS_PORT: "{REDIS_PORT}"
-      REDIS_KEY_PREFIX: "{REDIS_KEY_PREFIX}"
-      REDIS_DB_BACKEND: "{REDIS_DB_BACKEND}"
-      LARAVEL_ECHO_SERVER_AUTH_HOST: "{API_URL}"
+      LARAVEL_ECHO_SERVER_DB: "${LARAVEL_ECHO_SERVER_DB}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      REDIS_KEY_PREFIX: "${REDIS_KEY_PREFIX}"
+      REDIS_DB_BACKEND: "${REDIS_DB_BACKEND}"
+      LARAVEL_ECHO_SERVER_AUTH_HOST: "${API_URL}"
       LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
       LARAVEL_ECHO_SERVER_PORT: "8000"
-      LARAVEL_ECHO_SERVER_DEBUG: "{LARAVEL_ECHO_SERVER_DEBUG}"
+      LARAVEL_ECHO_SERVER_DEBUG: "${LARAVEL_ECHO_SERVER_DEBUG}"
     volumes:
       - ./docker-compose/ws/conf.d:/app
     links:
