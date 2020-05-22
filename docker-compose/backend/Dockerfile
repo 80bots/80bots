@@ -119,7 +119,6 @@ RUN chmod 0644 /etc/cron.d/laravel-scheduler
 # Load start script
 COPY ./bin/start.sh /var/www/start.sh
 RUN chmod 700 /var/www/*.sh
-RUN touch /var/log/cron.log
 
 # Set API
 WORKDIR /var/www

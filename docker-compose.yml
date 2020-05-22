@@ -19,6 +19,10 @@ services:
       - web
       - api
       - ws
+    depends_on:
+      - api
+      - web
+      - ws
     networks:
       - app-network
 
@@ -34,6 +38,9 @@ services:
       - ./docker-compose/web/app:/var/www/app
     networks:
       - app-network
+    depends_on:
+      - api
+      - ws
 
   # API
   # Image: ./docker-compose/api/Dockerfile
@@ -65,6 +72,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - app-network
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
   ws:
@@ -84,6 +93,8 @@ services:
     volumes:
       - ./docker-compose/ws/conf.d:/app
     links:
+      - redis
+    depends_on:
       - redis
     networks:
       - app-network

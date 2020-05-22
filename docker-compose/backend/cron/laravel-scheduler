@@ -1,1 +1,1 @@
-* * * * * cd /var/www/app && /usr/local/bin/php artisan schedule:run >> /var/log/cron.log 2>&1
+* * * * * cd /var/www/app && /usr/local/bin/php artisan schedule:run >> /var/www/app/storage/logs/cron.log 2>&1

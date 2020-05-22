@@ -13,6 +13,8 @@ cp /var/www/source/.env ./.env
 
 cd /var/www/app
 
+touch /var/www/app/storage/logs/cron.log
+
 composer install \
   && php artisan cache:refresh \
   && php artisan migrate \
