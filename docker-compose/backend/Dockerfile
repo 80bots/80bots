@@ -3,9 +3,8 @@ FROM php:7.4-fpm
 # Replace shell with bash so we can source files
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-# Environment variables
 ENV HOME /root
-COPY .env /var/www/source/.env
+
 # Install platform dependencies
 RUN apt-get update
 RUN apt-get install -y libmcrypt-dev
@@ -109,8 +108,6 @@ COPY ./.ssh $HOME/.ssh
 
 RUN chmod 400 $HOME/.ssh/id_rsa
 RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_hosts
-
-ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
 # Load cron script
 COPY ./cron/laravel-scheduler /etc/cron.d/laravel-scheduler

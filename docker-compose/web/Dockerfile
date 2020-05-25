@@ -9,9 +9,6 @@ COPY ./.ssh $HOME/.ssh
 RUN chmod 400 $HOME/.ssh/id_rsa
 RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
-# Setup env file
-COPY .env /var/www/source/.env
-
 # Setup starup script
 COPY ./bin/start.sh /var/www/start.sh
 RUN chmod 700 /var/www/*.sh

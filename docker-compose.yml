@@ -8,16 +8,18 @@ services:
     container_name: 80bots-proxy
     restart: unless-stopped
     ports:
-      - "${WEB_SERVER_PORT}:${WEB_SERVER_PORT}"
-      - "${API_SERVER_PORT}:${API_SERVER_PORT}"
-      - "${SOCKET_SERVER_PORT}:${SOCKET_SERVER_PORT}"
+      - "${DOCKER_WEB_SERVER_PORT}:${DOCKER_WEB_SERVER_PORT}"
+      - "${DOCKER_API_SERVER_PORT}:${DOCKER_API_SERVER_PORT}"
+      - "${DOCKER_SOCKET_SERVER_PORT}:${DOCKER_SOCKET_SERVER_PORT}"
+    env_file:
+      - .env
     environment:
-      WEB_SERVER_HOST: "${WEB_SERVER_HOST}"
-      WEB_SERVER_PORT: "${WEB_SERVER_PORT}"
-      API_SERVER_HOST: "${API_SERVER_HOST}"
-      API_SERVER_PORT: "${API_SERVER_PORT}"
-      SOCKET_SERVER_HOST: "${SOCKET_SERVER_HOST}"
-      SOCKET_SERVER_PORT: "${SOCKET_SERVER_PORT}"
+      WEB_SERVER_HOST: "${DOCKER_WEB_SERVER_HOST:-localhost}"
+      WEB_SERVER_PORT: "${DOCKER_WEB_SERVER_PORT:-80}"
+      API_SERVER_HOST: "${DOCKER_API_SERVER_HOST:-localhost}"
+      API_SERVER_PORT: "${DOCKER_API_SERVER_PORT:-8080}"
+      SOCKET_SERVER_HOST: "${DOCKER_SOCKET_SERVER_HOST:-localhost}"
+      SOCKET_SERVER_PORT: "${DOCKER_SOCKET_SERVER_PORT:-6001}"
     command: /bin/bash -c "envsubst < /etc/nginx/src/http-server.template.conf > /etc/nginx/conf.d/http-server.conf && exec nginx -g 'daemon off;'"
     volumes:
       - ./docker-compose/proxy/src:/etc/nginx/src
@@ -41,6 +43,14 @@ services:
       context: ./docker-compose/web
     command: /var/www/start.sh
     restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      GIT_USER: "${GIT_USER}"
+      GIT_EMAIL: "${GIT_EMAIL}"
+      API_URL: "${API_URL:-api}"
+      SOCKET_URL: "${SOCKET_URL:-ws}"
+      SOCKET_AUTH_URL: "${SOCKET_AUTH_URL:-api}/broadcasting/auth"
     volumes:
       - ./docker-compose/web/app:/var/www/app
     networks:
@@ -57,6 +67,8 @@ services:
       context: ./docker-compose/backend
     command: /var/www/start.sh
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - ./docker-compose/backend/app:/var/www/app
       - ./docker-compose/backend/supervisor:/etc/supervisor
@@ -69,28 +81,17 @@ services:
       - mysql
       - redis
       - ws
-      - mongodb
 
-  # MongoDB
-  # Image: https://hub.docker.com/_/mongo
-  mongodb:
-    image: mongo
-    container_name: 80bots-mongo
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "${MONGO_DB_USERNAME}"
-      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_DB_PASSWORD}"
-      MONGO_INITDB_DATABASE: "${MONGO_DB_DATABASE}"
-    networks:
-      - app-network
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
   ws:
     image: oanhnn/laravel-echo-server
     container_name: 80bots-ws
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      LARAVEL_ECHO_SERVER_AUTH_HOST: "api"
+      LARAVEL_ECHO_SERVER_AUTH_HOST: "${API_URL:-api}"
       LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
       LARAVEL_ECHO_SERVER_PORT: "8000"
       LARAVEL_ECHO_SERVER_DEBUG: "${APP_DEBUG}"
@@ -114,12 +115,14 @@ services:
     image: mysql:5.7
     container_name: 80bots-mysql
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_USER: "${MYSQL_USER}"
-      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DOCKER_MYSQL_ROOT_PASSWORD:-root}"
+      MYSQL_USER: "${DOCKER_MYSQL_USER}"
+      MYSQL_PASSWORD: "${DOCKER_MYSQL_PASSWORD}"
+      MYSQL_DATABASE: "${DOCKER_MYSQL_DATABASE}"
     volumes:
       - ./docker-compose/mysql/conf.d:/etc/mysql/conf.d/
       - ./docker-compose/mysql/data:/var/lib/mysql
