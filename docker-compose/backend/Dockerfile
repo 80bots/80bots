@@ -3,71 +3,71 @@ FROM php:7.4-fpm
 # Replace shell with bash so we can source files
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-ENV HOME /root
-
 # Install platform dependencies
-RUN apt-get update
-RUN apt-get install -y libmcrypt-dev
-RUN apt-get install -y default-mysql-client
-RUN apt-get install -y libpspell-dev
-RUN apt-get install -y freetds-dev
-RUN apt-get install -y unixodbc unixodbc-dev
-RUN apt-get install -y libxslt-dev
-RUN apt-get install -y libxml2-dev
-RUN apt-get install -y libldap2-dev
-RUN apt-get install -y libmagickwand-dev --no-install-recommends
-RUN apt-get install -y build-essential
-RUN apt-get install -y libpq-dev
-RUN apt-get install -y libbz2-dev
-RUN apt-get install -y libonig-dev
-RUN apt-get install -y libpng-dev
-RUN apt-get install -y libzip-dev
-RUN apt-get install -y libjpeg62-turbo-dev
-RUN apt-get install -y libfreetype6-dev
-RUN apt-get install -y libgmp-dev
-RUN apt-get install -y libtidy-dev
-RUN apt-get install -y locales
-RUN apt-get install -y zip
-RUN apt-get install -y jpegoptim optipng pngquant gifsicle
-RUN apt-get install -y vim
-RUN apt-get install -y unzip
-RUN apt-get install -y git
-RUN apt-get install -y curl
-RUN apt-get install -y apt-utils
-RUN apt-get install -y systemd
-RUN apt-get install -y supervisor
-RUN apt-get install -y cron
-RUN apt-get install -y iputils-ping
-# Auxilary utils / Network management
-RUN apt-get install -y nano
-RUN apt-get install -y traceroute
-RUN apt-get install -y dnsutils
+RUN apt-get update && apt-get install -y \
+    libmcrypt-dev \
+    default-mysql-client \
+    libpspell-dev \
+    freetds-dev \
+    unixodbc unixodbc-dev \
+    libxslt-dev \
+    libxml2-dev \
+    libldap2-dev \
+    libmagickwand-dev --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    libbz2-dev \
+    libonig-dev \
+    libpng-dev \
+    libzip-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libgmp-dev \
+    libtidy-dev \
+    locales \
+    zip \
+    jpegoptim \
+    optipng \
+    pngquant \
+    gifsicle \
+    unzip \
+    git \
+    curl \
+    apt-utils \
+    systemd \
+    supervisor \
+    cron \
+    iputils-ping \
+    nano \
+    traceroute \
+    dnsutils
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install bz2 \
-    && docker-php-ext-install calendar \
-    && docker-php-ext-install bcmath \
-    && docker-php-ext-install dba \
-    && docker-php-ext-install gettext \
-    && docker-php-ext-install gmp \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install exif \
-    && docker-php-ext-install intl \
-    && docker-php-ext-install pcntl \
-    && docker-php-ext-install mysqli \
-    && docker-php-ext-install opcache \
-    && docker-php-ext-install pspell \
-    && docker-php-ext-install shmop \
-    && docker-php-ext-install soap \
-    && docker-php-ext-install sockets \
-    && docker-php-ext-install sysvmsg \
-    && docker-php-ext-install sysvsem \
-    && docker-php-ext-install sysvshm \
-    && docker-php-ext-install tidy
+RUN docker-php-ext-install \
+    pdo_mysql \
+    bz2 \
+    calendar \
+    bcmath \
+    dba \
+    gettext \
+    gmp \
+    zip \
+    exif \
+    intl \
+    pcntl \
+    mysqli \
+    opcache \
+    pspell \
+    shmop \
+    soap \
+    sockets \
+    sysvmsg \
+    sysvsem \
+    sysvshm \
+    tidy
 
 #PHP XDebug ext
 RUN pecl install xdebug \
@@ -104,18 +104,18 @@ RUN pecl install mongodb \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY ./.ssh $HOME/.ssh
-
-RUN chmod 400 $HOME/.ssh/id_rsa
-RUN touch $HOME/.ssh/known_hosts && ssh-keyscan github.com >> $HOME/.ssh/known_hosts
-
 # Load cron script
 COPY ./cron/laravel-scheduler /etc/cron.d/laravel-scheduler
 RUN chmod 0644 /etc/cron.d/laravel-scheduler
 
 # Load start script
-COPY ./bin/start.sh /var/www/start.sh
-RUN chmod 700 /var/www/*.sh
+RUN mkdir /var/src
+COPY ./bin/start.sh /var/src/start.sh
+RUN chmod 700 /var/src/start.sh
 
 # Set API
 WORKDIR /var/www
+
+EXPOSE 9000
+
+CMD /var/src/start.sh

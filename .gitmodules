@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = git@github.com:80bots/saas-laravel.git
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:80bots/saas-next.js.git

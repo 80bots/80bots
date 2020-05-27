@@ -11,8 +11,6 @@ services:
       - "${DOCKER_WEB_SERVER_PORT:-80}:${DOCKER_WEB_SERVER_PORT:-80}"
       - "${DOCKER_API_SERVER_PORT:-8080}:${DOCKER_API_SERVER_PORT:-8080}"
       - "${DOCKER_SOCKET_SERVER_PORT:-6001}:${DOCKER_SOCKET_SERVER_PORT:-6001}"
-    env_file:
-      - .env
     environment:
       WEB_SERVER_HOST: "${DOCKER_WEB_SERVER_HOST:-localhost}"
       WEB_SERVER_PORT: "${DOCKER_WEB_SERVER_PORT:-80}"
@@ -20,18 +18,20 @@ services:
       API_SERVER_PORT: "${DOCKER_API_SERVER_PORT:-8080}"
       SOCKET_SERVER_HOST: "${DOCKER_SOCKET_SERVER_HOST:-localhost}"
       SOCKET_SERVER_PORT: "${DOCKER_SOCKET_SERVER_PORT:-6001}"
-    command: /bin/bash -c "envsubst < /etc/nginx/src/http-server.template.conf > /etc/nginx/conf.d/http-server.conf && exec nginx -g 'daemon off;'"
+    command: /bin/bash -c "envsubst < /etc/nginx/http-server.template.conf > /etc/nginx/conf.d/http-server.conf && exec nginx -g 'daemon off;'"
     volumes:
+      - ./backend:/var/www
+      - ./docker-compose/proxy/http-server.template.conf:/etc/nginx/http-server.template.conf
       - ./docker-compose/proxy/src:/etc/nginx/src
       - ./docker-compose/proxy/conf.d:/etc/nginx/conf.d
     links:
-      - web
       - api
       - ws
+      - web
     depends_on:
       - api
-      - web
       - ws
+      - web
     networks:
       - app-network
 
@@ -41,18 +41,19 @@ services:
     container_name: 80bots-web
     build:
       context: ./docker-compose/web
-    command: /var/www/start.sh
-    restart: unless-stopped
-    env_file:
-      - .env
     environment:
-      GIT_USER: "${GIT_USER}"
-      GIT_EMAIL: "${GIT_EMAIL}"
-      API_URL: "${API_URL:-http://localhost:8080/api}"
-      SOCKET_URL: "${SOCKET_URL:-http://localhost:6001}"
-      SOCKET_AUTH_URL: "${SOCKET_AUTH_URL:-http://localhost:8080/broadcasting/auth}"
+      NODE_ENV: "${APP_ENV:-local}"
+      PORT: "8000"
+      API_URL: "http://${DOCKER_API_SERVER_HOST:-localhost}:${DOCKER_API_SERVER_PORT:-8080}/api"
+      SOCKET_URL: "http://${DOCKER_SOCKET_SERVER_HOST:-localhost}:${DOCKER_SOCKET_SERVER_PORT:-6001}"
+      SOCKET_AUTH_URL: "http://${DOCKER_API_SERVER_HOST:-localhost}:${DOCKER_API_SERVER_PORT:-8080}/broadcasting/auth"
+      STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      FACEBOOK_CLIENT_ID: "${FACEBOOK_CLIENT_ID}"
+      SENTRY_DSN: "${SENTRY_DSN_WEB}"
+    restart: unless-stopped
     volumes:
-      - ./docker-compose/web/app:/var/www/app
+      - ./frontend:/var/www
     networks:
       - app-network
     depends_on:
@@ -65,22 +66,20 @@ services:
     container_name: 80bots-api
     build:
       context: ./docker-compose/backend
-    command: /var/www/start.sh
     restart: unless-stopped
     env_file:
       - .env
-    volumes:
-      - ./docker-compose/backend/app:/var/www/app
-      - ./docker-compose/backend/supervisor:/etc/supervisor
     links:
-      - mysql
       - redis
+      - mysql
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./backend:/var/www
+      - ./docker-compose/backend/supervisor:/etc/supervisor
     networks:
       - app-network
-    depends_on:
-      - mysql
-      - redis
-      - ws
 
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
@@ -93,7 +92,7 @@ services:
     environment:
       LARAVEL_ECHO_SERVER_AUTH_HOST: "${API_URL:-api}"
       LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
-      LARAVEL_ECHO_SERVER_PORT: "8000"
+      LARAVEL_ECHO_SERVER_PORT: "6001"
       LARAVEL_ECHO_SERVER_DEBUG: "${APP_DEBUG:-false}"
       LARAVEL_ECHO_SERVER_REDIS_HOST: "${REDIS_HOST:-redis}"
       LARAVEL_ECHO_SERVER_REDIS_PORT: "${REDIS_PORT:-6379}"
@@ -123,6 +122,8 @@ services:
       MYSQL_USER: "${DOCKER_MYSQL_USER:-user}"
       MYSQL_PASSWORD: "${DOCKER_MYSQL_PASSWORD:-user}"
       MYSQL_DATABASE: "${DOCKER_MYSQL_DATABASE:-80bots}"
+    ports:
+      - "3306:3306"
     volumes:
       - ./docker-compose/mysql/conf.d:/etc/mysql/conf.d/
       - ./docker-compose/mysql/data:/var/lib/mysql

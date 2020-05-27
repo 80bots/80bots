@@ -1,19 +1,8 @@
 #!/bin/bash
-# Clone or pull the app
-if [ -d "/var/www/app/.git" ]
-  then
-    echo "Pulling from repository git@github.com:80bots/saas-laravel.git"
-    cd /var/www/app && git pull
-  else
-    echo "Cloning from repository git@github.com:80bots/saas-laravel.git"
-    cd /var/www/app && git clone git@github.com:80bots/saas-laravel.git .
-fi
+touch /var/www/storage/logs/cron.log
 
 # Setup env
-cd /var/www/app
-rm -rf ./.env
-touch ./.env
-
+cd /var/www && rm -rf ./.env && touch ./.env
 
 echo "APP_NAME=$APP_NAME" >> ./.env
 echo "APP_ENV=$APP_ENV" >> ./.env
@@ -81,11 +70,6 @@ echo "SENTRY_LARAVEL_DSN=$SENTRY_LARAVEL_DSN" >> ./.env
 git config user.name $GIT_NAME
 git config user.email $GIT_EMAIL
 
-touch /var/www/app/storage/logs/cron.log
-
-composer install \
-  && php artisan cache:refresh \
-  && php artisan migrate \
-  && crontab /etc/cron.d/laravel-scheduler && service cron restart \
+crontab /etc/cron.d/laravel-scheduler && service cron restart \
   && service supervisor start \
-  && php artisan serve --host=0.0.0.0 --port=8000
+  && php-fpm
