@@ -72,4 +72,4 @@ git config user.email $GIT_EMAIL
 
 crontab /etc/cron.d/laravel-scheduler && service cron restart \
   && service supervisor start \
-  && php-fpm
+  && php-fpm -R
