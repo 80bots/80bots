@@ -1,30 +1,24 @@
-Brief information: 
+Brief information:
 
-This application is developed for simple local deployment of 80bots application architecture that includes the following repositories:
+This application is developed for simple local deployment of 80bots application architecture that includes the following repositories and they are added as submodules: 
 
-1. Laravel APP (https://github.com/80bots/saas-laravel) is intended for:
-    - API to interact with functional options;
-    - Laravel Schedule to perform routine tasks such as sync and data update
-    - Demonized Queue worker based on Supervisor for processing a queue of tasks set
-    - Broadcasting - for notifying subscribers about events (notification via WebSockets)
-    - Interaction with Primary database based on MySQL
-    - Bots (instances) management (Start, Stop, Terminate etc.)
-2. NextJS APP (https://github.com/80bots/saas-next.js) is intended for: 
-    - convenient providing data related to bots
-    - interaction with API for managing data and services 
-    - reviewing info about users and everything related
-    - configuring custom scripts and parameters of launching bots and instances on which they will be installed. 
-3. Bots scripts (https://github.com/80bots/puppeteer), are intended for: 
-    - various parsing 
-    - gathering info and providing it in special formats. 
+- Laravel APP (https://github.com/80bots/saas-laravel) is intended for:
+  - API to interact with functional options;
+  - Laravel Schedule to perform routine tasks such as sync and data update
+  - Demonized Queue worker based on Supervisor for processing a queue of tasks set
+  - Broadcasting - for notifying subscribers about events (notification via WebSockets)
+  - Interaction with Primary database based on MySQL
+  - Bots (instances) management (Start, Stop, Terminate etc.)
+- NextJS APP (https://github.com/80bots/saas-next.js) is intended for:
+  - convenient providing data related to bots
+  - interaction with API for managing data and services
+  - reviewing info about users and everything related
+  - configuring custom scripts and parameters of launching bots and instances on which they will be installed.
+- Bots scripts (https://github.com/80bots/puppeteer), are intended for:
+  - various parsing
+  - gathering info and providing it in special formats.
 
 #Environment variables:
-
-#### BUILDER GIT CONFIG
-- `GIT_NAME` - variable that will be used under Git configuration (git config user.name $GIT_USER)
-- `GIT_EMAIL` - variable that will be used under Git configuration (git config user.name $GIT_USER)
-
-It is important to set these parameters in order to commit changes from the local environment correctly.
 
 #### PROXY SERVER CONFIG
 - `DOCKER_WEB_SERVER_HOST` - NextJS host, default: localhost (Custom usage example: 80bots.loc).
@@ -34,7 +28,10 @@ It is important to set these parameters in order to commit changes from the loca
 - `DOCKER_SOCKET_SERVER_HOST` - WS host, default: localhost (Custom usage example: ws.80bots.loc)
 - `DOCKER_SOCKET_SERVER_PORT` - WS post, default: 6001 (Custom usage example: 80)
 
-If you consider to use your own custom hosts and ports please make sure you've added them to `/etc/hosts`
+If you consider to use your own custom hosts and ports please make sure you've added them to `/etc/hosts`;
+
+If you decide to use default configuration, verify that all specified ports are not used, otherwise you may easily redefine them in the abovementioned parameters 
+
 
 #### MYSQL SERVER CONFIG:
 
@@ -43,14 +40,17 @@ If you consider to use your own custom hosts and ports please make sure you've a
 - `DOCKER_MYSQL_PASSWORD` - Additional user's password, default: user
 - `DOCKER_MYSQL_DATABASE` - Default database name which will be created if not exists on startup phase, default: user
 
+This configuration is a key configuration for starting MySQL container and change of these parameters won’t have any influence until the container rebuild. 
+
+
 #### WEB APP CONFIG
-- `API_URL` - The public accessible API server url (baseUrl), default: http://localhost:8080/api
-- `SOCKET_URL` - The public accessible WebSockets server url, default: http://localhost:6001
-- `SOCKET_AUTH_URL` - The WS auth host, default: http://localhost:8080
 - `STRIPE_PUBLIC_KEY` - Stripe Public Key, default: none
 - `GOOGLE_CLIENT_ID` - Google client id, default: none
 - `FACEBOOK_CLIENT_ID` - Facebook client id, default: none
 - `SENTRY_DSN_WEB` - Sentry DSN, default: none
+
+The application also uses already defined parameters under hood from the PROXY SERVER CONFIG section. You may get acquainted with them in the appropriate section of  docker-compose.yml file services in the root of the project.
+
 
 ##### LARAVEL APP CONFIG
 
@@ -68,8 +68,8 @@ If you consider to use your own custom hosts and ports please make sure you've a
 - `SESSION_LIFETIME` - Session lifetime, default 120
 - `DB_CONNECTION` - DB driver (connection), default: mysql. Warning! Changing of this parameter could affect the app stability and functionality
 - `DB_HOST` - DB host, default: mysql. The default value uses linked container and interact with it using service's name. If you wish to use you own mysql server, please provide the public accessible host
-- `DB_PORT` - DB port, default: 3306. 
-- `DB_DATABASE` - DB name, default: 80bots. 
+- `DB_PORT` - DB port, default: 3306.
+- `DB_DATABASE` - DB name, default: 80bots.
 - `DB_USERNAME` - DB username, default: user
 - `DB_PASSWORD` - DB password, default: user
 - `REDIS_HOST` - Redis host, default: redis. The default value uses linked container and interact with it using service's name. If you wish to use you own redis server, please provide the public accessible host
@@ -100,22 +100,40 @@ If you consider to use your own custom hosts and ports please make sure you've a
 
 The extended description for each of the variables you can find here https://laravel.com/docs
 
+## Requirements
+ Software:
+ - Docker: ^19 - https://docs.docker.com/get-docker/
+ - NodeJS: ^10 - https://nodejs.org/en/download/
+ - NPM: ^6.4 - https://www.npmjs.com/get-npm
+ - Yarn: ^1 - https://classic.yarnpkg.com/en/docs/install
+ - Composer: latest - https://getcomposer.org/doc/00-intro.md
+ - Git: latest - https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+ 
+Other:
+ - Access to above listed repositories
+
+## Recommendations:
+In order to automate a few things related to GIT and omit a routine, you can add SSH key to the your GitHub Account: 
+
+https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account.
+
 ## Installing from scratch:
-1. Install Docker on your workstation (https://docs.docker.com/get-docker/)
-2. Make sure that your GitHub account has access to abovementioned repositories
-3. Add (if you haven’t added yet) your SSH key to your GitHub account (https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account)
-4. Copy the attached private key to the following directories, naming it id_rsa:
-    - `{appRoot}/docker-compose/backend/.ssh`
-    - `{appRoot}/docker-compose/web/.ssh`
-5. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`
-6. Run  `docker-compose up --build` command - initial build may take 15-20 minutes
-7. At the end of app builds installation, the following resources should be available in Web Browser:
-    - API - By default `localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
-    - WEB - By default `localhost` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
-    - WebSockets - By default `localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file
-8. It is needed to run Seeders for initial DB configuration by using the following command:
+
+Assuming that all abovementioned Requirements are set, it is needed to do the following in order to start the application:
+1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`
+2. Configure the git config user’s data (name and email) https://help.github.com/en/github/using-git/setting-your-username-in-git
+3. Run `./install.sh` and wait for the task completion
+4. Run  `docker-compose up --build` command and wait for the task completion. Note: initialization can take about 15-20 minutes
+
+NOTE: 
+At the end of app builds installation, the following resources should be available in Web Browser:
+  - API - By default `localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
+  - WEB - By default `localhost` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
+  - WebSockets - By default `localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file
+
+Additionally, after Initial setup, it is necessary to perform Laravel & Database configuration that is launched by a command in case if containers are already running:
 ```
-docker exec -w /var/www/app 80bots-api php artisan db:refresh
+docker exec 80bots-api php artisan db:refresh
 ```
 Warning! This action will clear the database and populate it with default values!
 
@@ -124,12 +142,11 @@ Warning! This action will clear the database and populate it with default values
 Most tasks may be implemented without necessity to build containers every time when changes are added, however, some cases require rebuilding. Examples of such cases are:
 
 - Installing additional OS/PHP dependencies
-- Updating Supervisor, Cron or code related directly to Queue configurations 
+- Updating Supervisor, Cron or code related directly to Queue configurations
 - Changing parameters in .env file
-- Changing access to GitHub or SSH key
 - All other similar tasks that requires affecting the environment
 
-Rebuild of containers is performed according to official documentation of 
+Rebuild of containers is performed according to official documentation of
 Docker (https://docs.docker.com/)
 
 Almost all rest work related to application development on Laravel as well as on NextJS doesn’t require constant container rebuilds.
@@ -140,57 +157,79 @@ Configuration of application architecture is provided in docker-compose.yml file
 
 1. Proxy server based on Nginx
 
-    Nginx service itself is based on this image https://hub.docker.com/_/nginx, which default starting command was redefined for forming dynamical configurations using .env file
-     
-    All required config files are located in directory `./docker-compose/proxy/src` and are used for creation of proxy server configuration.
-    
-    A ready-to-go server config file may be checked in directory `./docker-compose/proxy/conf.d`. 
-    Changes in this file may be rewritten when launching the container. For adding corrections, it is necessary to edit files from directory `./docker-compose/proxy/src`.
-    
-2. MySQL server 
+   Nginx service itself is based on this image https://hub.docker.com/_/nginx, which default starting command was redefined for forming dynamical configurations using .env file
+   
+   All required config files are located in directory `./docker-compose/proxy/src` and are used for creation of proxy server configuration.
+  
+   A ready-to-go server config file may be checked in `./docker-compose/proxy/conf.d` directory. NOTE: Changes in this directory will affect nothing! For adding corrections, it is necessary to edit files from `./docker-compose/proxy/src` directory.
 
-    MySql service itself is based on this image https://hub.docker.com/_/mysql.
-    
-    The service is configured in such a way that after launching the container, volume is formed between directory with mysql data and   `./docker-compose/mysql/data` directory. 
-    
-    Thus, it is possible to develop, change a container without losing data from the local environment    
-    
+  
+2. MySQL server
+
+   MySql service itself is based on this image https://hub.docker.com/_/mysql.
+  
+   The service is configured in such a way that after launching the container, volume is formed between directory with mysql data and   `./docker-compose/mysql/data` directory.
+  
+   Thus, it is possible to develop, change a container without losing data from the local environment
+  
 3. Redis server
 
-    Redis service itself is based on this image https://hub.docker.com/_/redis/
-        
-    Service is configured in such a way that after launching the container, volume is formed between directory with Redit data and   `./docker-compose/redis/data` directory. 
-    
-    Thus, it is possible to develop, change a container without losing data from the local environment    
-    
+   Redis service itself is based on this image https://hub.docker.com/_/redis/
+      
+   Service is configured in such a way that after launching the container, volume is formed between directory with Redit data and   `./docker-compose/redis/data` directory.
+  
+   Thus, it is possible to develop, change a container without losing data from the local environment   
+  
 4. Laravel App (API + BG workers) server
 
-    This container build is implemented in `./docker-compose/backend/Dockerfile`.
-        
-    Installing all OS dependencies, Git SSH keys etc configuration are performed in this file.
-      
-    When the container is started, Bash Script launches. Every time, when starting, it executes git clone or git pull, depending on the current state, install Composer dependencies and run all the necessary internal services (http server, cron, supervisor)
-    
+   This container build is implemented in `./docker-compose/backend/Dockerfile`.
+          
+   When the container is started, Bash Script launches. Every time, when starting, it executes a few auxiliary things, re-generate the .env file and run all the necessary internal services (cron, supervisor and php-fpm server)
+  
 5. NextJS server (React Web App)
 
-    This container build is implemented in `./docker-compose/web/Dockerfile`.
-        
-    Installing all OS dependencies, Git SSH keys etc configuration are performed in this file.
+   This container build is implemented in `./docker-compose/web/Dockerfile`.
 
-    When the container is started, Bash Script (`./docker-compose/web/bin/start.sh`) launches. Every time, when starting, it executes git clone or git pull, depending on the current state, install NPM dependencies, start the watcher or build compiled application, depending on `APP_ENV` , and start http server (NextJS)
-    
+   When the container is started, Bash Script (`./docker-compose/web/bin/start.sh`) launches. Every time, when starting, re-generate the .env file, start the watcher or build compiled application, depending on `APP_ENV` , and start http server (NextJS)
+  
 6. Laravel Echo Server (WebSockets)
 
-    Redis service itself is based on this imagehttps://hub.docker.com/r/oanhnn/laravel-echo-server
-    
-    After starting the application, generated server configurations may be checked in  `./docker-compose/ws/conf.d`.
-       
-    All services operate inside their own network and interact with each other by links within their own network
+   Redis service itself is based on this image https://hub.docker.com/r/oanhnn/laravel-echo-server
+  
+   After starting the application, generated server configurations may be checked in  `./docker-compose/ws/conf.d`.
+     
+   All services operate inside their own network and interact with each other by links within their own network
 
 
 #### Additional supporting commands:
 
-Reset the database to its initial configurations: 
+Refresh Database:
 ```
-docker exec -w /var/www/app 80bots-api php artisan db:refresh
+docker exec 80bots-api php artisan db:refresh
+```
+Refresh Cache:
+```
+docker exec 80bots-api php artisan cache:refresh
+```
+
+Rebuild all containers:
+
+```
+docker-compose up --build
+```
+
+Rebuild specific container:
+```
+docker-compose up --build {container_name}
+```
+
+Stop all containers:
+
+```
+Docker-compose stop
+```
+
+Remove ALL the containers and images (Warning! This command will remove all of your images and containers!):
+```
+docker system prune -a
 ```
