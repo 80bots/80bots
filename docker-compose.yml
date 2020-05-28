@@ -89,6 +89,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    command: start --force
     environment:
       LARAVEL_ECHO_SERVER_AUTH_HOST: "${API_URL:-api}"
       LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
