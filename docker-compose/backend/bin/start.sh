@@ -2,7 +2,7 @@
 touch /var/www/storage/logs/cron.log
 
 # Setup env
-cd /var/www && rm -rf .env && touch .env
+cd /var/www && rm -rf .env && touch .env && chgrp -R www-data .env
 
 # Clear existing logs
 rm -rf /var/www/storage/logs/*
@@ -69,10 +69,9 @@ echo "STRIPE_SECRET=$STRIPE_SECRET" >> ./.env
 
 echo "SENTRY_LARAVEL_DSN=$SENTRY_LARAVEL_DSN" >> ./.env
 
-#chmod 775 -R storage
+chmod 775 -R storage/logs
 chgrp -R www-data storage
 
-#chmod 775 -R bootstrap/cache
 chgrp -R www-data bootstrap/cache
 
 crontab /etc/cron.d/laravel-scheduler && service cron restart \
