@@ -66,9 +66,11 @@ echo "STRIPE_SECRET=$STRIPE_SECRET" >> ./.env
 
 echo "SENTRY_LARAVEL_DSN=$SENTRY_LARAVEL_DSN" >> ./.env
 
-# Setup Git user name and email in order to correctly make a push from the local environment
-git config user.name $GIT_NAME
-git config user.email $GIT_EMAIL
+chmod 775 -R storage
+chown -R $USER:www-data storage
+
+chmod 775 -R bootstrap/cache
+chown -R $USER:www-data bootstrap/cache
 
 crontab /etc/cron.d/laravel-scheduler && service cron restart \
   && service supervisor start \
