@@ -44,9 +44,9 @@ services:
     environment:
       NODE_ENV: "${APP_ENV:-local}"
       PORT: "8000"
-      API_URL: "http://${DOCKER_API_SERVER_HOST:-localhost}:${DOCKER_API_SERVER_PORT:-8080}/api"
-      SOCKET_URL: "http://${DOCKER_SOCKET_SERVER_HOST:-localhost}:${DOCKER_SOCKET_SERVER_PORT:-6001}"
-      SOCKET_AUTH_URL: "http://${DOCKER_API_SERVER_HOST:-localhost}:${DOCKER_API_SERVER_PORT:-8080}/broadcasting/auth"
+      API_URL: "${API_URL}/api"
+      SOCKET_URL: "${WS_URL}"
+      SOCKET_AUTH_URL: "${API_URL}/broadcasting/auth"
       STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY}"
       GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
       FACEBOOK_CLIENT_ID: "${FACEBOOK_CLIENT_ID}"
@@ -87,17 +87,15 @@ services:
     image: oanhnn/laravel-echo-server
     container_name: 80bots-ws
     restart: unless-stopped
-    env_file:
-      - .env
     command: start --force
     environment:
-      LARAVEL_ECHO_SERVER_AUTH_HOST: "${API_URL:-api}"
+      LARAVEL_ECHO_SERVER_AUTH_HOST: "some-test"
       LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
       LARAVEL_ECHO_SERVER_PORT: "6001"
       LARAVEL_ECHO_SERVER_DEBUG: "${APP_DEBUG:-false}"
-      LARAVEL_ECHO_SERVER_REDIS_HOST: "${REDIS_HOST:-redis}"
-      LARAVEL_ECHO_SERVER_REDIS_PORT: "${REDIS_PORT:-6379}"
-      LARAVEL_ECHO_SERVER_REDIS_PASSWORD: "${REDIS_PASSWORD:-root}"
+      REDIS_HOST: "${REDIS_HOST:-redis}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-root}"
       REDIS_PREFIX: "${REDIS_PREFIX:-master}"
       LARAVEL_ECHO_SERVER_PROTO: "http"
     volumes:
