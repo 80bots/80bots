@@ -14,6 +14,7 @@ echo "APP_DEBUG=$APP_DEBUG" >> ./.env
 echo "APP_URL=$APP_URL" >> ./.env
 
 echo "LOG_CHANNEL=$LOG_CHANNEL" >> ./.env
+echo "WS_URL=$WS_URL" >> ./.env
 
 echo "DB_CONNECTION=$DB_CONNECTION" >> ./.env
 echo "DB_HOST=$DB_HOST" >> ./.env
