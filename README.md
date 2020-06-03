@@ -153,6 +153,14 @@ Docker (https://docs.docker.com/)
 
 Almost all rest work related to application development on Laravel as well as on NextJS doesn’t require constant container rebuilds.
 
+### FYI
+
+`./start.sh` script installs all required app dependencies, configures docker architecture and runs all required services.
+After a local app version is successfully launched in .env file, a dynamic link to tunnels is generated on Serveo.net and these tunnels are launched.
+
+As a result of the successful launch of these tunnels, the local project becomes available for public on the web.
+Such a specific deployment is needed for making bots,deployed on AWS, able to interact with your local environment.
+
 ### Architecture overview
 
 Configuration of application architecture is provided in docker-compose.yml file and represents a set of services:
