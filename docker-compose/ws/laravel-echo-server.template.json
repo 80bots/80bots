@@ -1,0 +1,26 @@
+{
+  "apiOriginAllow": {},
+  "authHost": "${AUTH_HOST}",
+  "authEndpoint": "${AUTH_ENDPOINT}",
+  "clients": [],
+  "database": "redis",
+  "databaseConfig": {
+    "redis": {
+      "host": "${REDIS_HOST}",
+      "port": "${REDIS_PORT}",
+      "password": "${REDIS_PASSWORD}",
+      "keyPrefix": "${REDIS_PREFIX}"
+    },
+    "publishPresence": true
+  },
+  "devMode": "${APP_DEBUG}",
+  "host": "0.0.0.0",
+  "port": 6001,
+  "protocol": "http",
+  "sslCertPath": "",
+  "sslKeyPath": "",
+  "sslCertChainPath": "",
+  "sslPassphrase": "",
+  "socketio": {},
+  "subscribers": {"http": true, "redis": true}
+}

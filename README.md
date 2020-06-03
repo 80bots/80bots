@@ -122,11 +122,13 @@ https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-
 Assuming that all abovementioned Requirements are set, it is needed to do the following in order to start the application:
 1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`
 2. Configure the git config user’s data (name and email) https://help.github.com/en/github/using-git/setting-your-username-in-git
-3. Run `./install.sh` and wait for the task completion
-4. Run  `docker-compose up --build` command and wait for the task completion. Note: initialization can take about 15-20 minutes
+3. Run `./start.sh` and wait for the task completion
 
-NOTE: 
-At the end of app builds installation, the following resources should be available in Web Browser:
+At the end of installation, you'll see generated links to the application in terminal.
+
+NOTE:
+
+Also, the following resources should be available in Web Browser:
   - API - By default `localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
   - WEB - By default `localhost` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
   - WebSockets - By default `localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file

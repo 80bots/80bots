@@ -84,20 +84,18 @@ services:
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
   ws:
-    image: oanhnn/laravel-echo-server
+    build:
+      context: ./docker-compose/ws
+      args:
+        AUTH_HOST: "${API_URL}"
+        AUTH_ENDPOINT: "/broadcasting/auth"
+        REDIS_HOST: "${REDIS_HOST}"
+        REDIS_PORT: "${REDIS_PORT}"
+        REDIS_PASSWORD: "${REDIS_PASSWORD}"
+        REDIS_PREFIX: "${REDIS_PREFIX}"
+        APP_DEBUG: "${APP_DEBUG}"
     container_name: 80bots-ws
     restart: unless-stopped
-    command: start --force
-    environment:
-      LARAVEL_ECHO_SERVER_AUTH_HOST: "some-test"
-      LARAVEL_ECHO_SERVER_HOST: "0.0.0.0"
-      LARAVEL_ECHO_SERVER_PORT: "6001"
-      LARAVEL_ECHO_SERVER_DEBUG: "${APP_DEBUG:-false}"
-      REDIS_HOST: "${REDIS_HOST:-redis}"
-      REDIS_PORT: "${REDIS_PORT:-6379}"
-      REDIS_PASSWORD: "${REDIS_PASSWORD:-root}"
-      REDIS_PREFIX: "${REDIS_PREFIX:-master}"
-      LARAVEL_ECHO_SERVER_PROTO: "http"
     volumes:
       - ./docker-compose/ws/conf.d:/app
     links:

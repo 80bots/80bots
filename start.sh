@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./install.sh
+
 BASE_NAME="$(openssl rand -hex 3)"
 SCHEMA="https"
 DOMAIN=serveo.net
