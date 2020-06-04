@@ -75,6 +75,8 @@ chgrp -R www-data storage
 
 chgrp -R www-data bootstrap/cache
 
+php artisan cache:refresh
+
 crontab /etc/cron.d/laravel-scheduler && service cron restart \
-  && service supervisor start \
+  && service supervisor start && supervisorctl update && supervisorctl reload \
   && php-fpm
