@@ -92,7 +92,6 @@ services:
         REDIS_HOST: "${REDIS_HOST}"
         REDIS_PORT: "${REDIS_PORT}"
         REDIS_PASSWORD: "${REDIS_PASSWORD}"
-        REDIS_PREFIX: "${REDIS_PREFIX}"
         APP_DEBUG: "${APP_DEBUG}"
     container_name: 80bots-ws
     restart: unless-stopped
