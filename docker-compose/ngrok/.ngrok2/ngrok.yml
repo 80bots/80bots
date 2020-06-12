@@ -1,0 +1,15 @@
+web_addr: 0.0.0.0:4040
+authtoken:
+tunnels:
+  web:
+    addr: proxy:80
+    proto: http
+    bind_tls: false
+  api:
+    addr: proxy:8080
+    proto: http
+    bind_tls: false
+  ws:
+    addr: proxy:6001
+    proto: http
+    bind_tls: false

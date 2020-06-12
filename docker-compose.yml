@@ -137,6 +137,23 @@ services:
       - ./docker-compose/redis/data:/data
     networks:
       - app-network
+
+  ngrok:
+    image: wernight/ngrok
+    container_name: 80bots-tunnel
+    command: "ngrok start --all"
+    ports:
+      - "4040:4040"
+    restart: unless-stopped
+    links:
+      - proxy
+    depends_on:
+      - proxy
+    volumes:
+      - ./docker-compose/ngrok/.ngrok2:/home/ngrok/.ngrok2
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
