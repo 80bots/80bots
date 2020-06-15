@@ -138,8 +138,11 @@ services:
     networks:
       - app-network
 
+  # Ngrok
+  # Image: https://hub.docker.com/r/wernight/ngrok/
   ngrok:
-    image: wernight/ngrok
+    build:
+      context: ./docker-compose/ngrok
     container_name: 80bots-tunnel
     command: "ngrok start --all"
     ports:
@@ -149,8 +152,6 @@ services:
       - proxy
     depends_on:
       - proxy
-    volumes:
-      - ./docker-compose/ngrok/.ngrok2:/home/ngrok/.ngrok2
     networks:
       - app-network
 
