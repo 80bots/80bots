@@ -59,7 +59,7 @@ elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
     echo "Unsupported platform" && exitt -1
 fi
 
-docker-compose up --build -d
+docker-compose up --build -d proxy
 
 # Make it possible to publish the local project https://serveo.net/#manual
 # TODO: Deploy our own hosted serveo tool in order to process everything through our domain and servers

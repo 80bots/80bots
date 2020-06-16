@@ -35,6 +35,28 @@ services:
     networks:
       - app-network
 
+  # Ngrok
+  # Image: https://hub.docker.com/r/wernight/ngrok/
+  ngrok:
+    build:
+      context: ./docker-compose/ngrok
+      args:
+        NGROK_AUTH: "${NGROK_AUTH}"
+        WEB_SUBDOMAIN: "${WEB_SUBDOMAIN}"
+        API_SUBDOMAIN: "${API_SUBDOMAIN}"
+        WS_SUBDOMAIN: "${WS_SUBDOMAIN}"
+    container_name: 80bots-tunnel
+    command: "ngrok start --all"
+    restart: unless-stopped
+    ports:
+      - "4040:4040"
+    links:
+      - proxy
+    depends_on:
+      - proxy
+    networks:
+      - app-network
+
   # React Web Client
   # Image: ./docker-compose/web/Dockerfile
   web:
@@ -137,24 +159,6 @@ services:
       - ./docker-compose/redis/data:/data
     networks:
       - app-network
-
-  # Ngrok
-  # Image: https://hub.docker.com/r/wernight/ngrok/
-  ngrok:
-    build:
-      context: ./docker-compose/ngrok
-    container_name: 80bots-tunnel
-    command: "ngrok start --all"
-    ports:
-      - "4040:4040"
-    restart: unless-stopped
-    links:
-      - proxy
-    depends_on:
-      - proxy
-    networks:
-      - app-network
-
 networks:
   app-network:
     driver: bridge

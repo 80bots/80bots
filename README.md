@@ -24,13 +24,19 @@ This application is developed for simple local deployment of 80bots application 
 - `DOCKER_WEB_SERVER_HOST` - NextJS host, default: localhost (Custom usage example: 80bots.loc).
 - `DOCKER_WEB_SERVER_PORT` - NextJS port, default: 80 (Custom usage example: 80)
 - `DOCKER_API_SERVER_HOST` - API host, default: localhost (Custom usage example: api.80bots.loc)
-- `DOCKER_API_SERVER_PORT` - API host, default: 8080 (Custom usage example: 80)
+- `DOCKER_API_SERVER_PORT` - API port, default: 8080 (Custom usage example: 80)
 - `DOCKER_SOCKET_SERVER_HOST` - WS host, default: localhost (Custom usage example: ws.80bots.loc)
 - `DOCKER_SOCKET_SERVER_PORT` - WS post, default: 6001 (Custom usage example: 80)
 
 If you consider to use your own custom hosts and ports please make sure you've added them to `/etc/hosts`;
 
 If you decide to use default configuration, verify that all specified ports are not used, otherwise you may easily redefine them in the abovementioned parameters 
+
+
+#### NGROK APP CONFIG
+- `NGROK_AUTH` - Authentication key for Ngrok account.
+
+This configuration is a key configuration for starting Ngrok container. 
 
 
 #### MYSQL SERVER CONFIG:
@@ -122,16 +128,22 @@ https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-
 Assuming that all abovementioned Requirements are set, it is needed to do the following in order to start the application:
 1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`
 2. Configure the git config user’s data (name and email) https://help.github.com/en/github/using-git/setting-your-username-in-git
-3. Run `./start.sh` and wait for the task completion
+3. If you'd like to run the application based on Ngrok, please proceed as follows: 
+   - Run `./start-ngrok.sh` and wait for the task completion. 
 
-At the end of installation, you'll see generated links to the application in terminal.
+    At the end of the installation, a browser opens with the necessary links.
+
+If you'd like to run the application based on Serveo, please proceed as follows:
+   - Run `./start-serveo.sh` and wait for the task completion. 
+
+   At the end of installation, you'll see generated links to the application in terminal.
 
 NOTE:
 
 Also, the following resources should be available in Web Browser:
-  - API - By default `localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
-  - WEB - By default `localhost` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
-  - WebSockets - By default `localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file
+  - API - By default `http://localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
+  - WEB - By default `http://localhost:80` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
+  - WebSockets - By default `http://localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file
 
 Additionally, after Initial setup, it is necessary to perform Laravel & Database configuration that is launched by a command in case if containers are already running:
 ```
@@ -155,8 +167,9 @@ Almost all rest work related to application development on Laravel as well as on
 
 ### FYI
 
-`./start.sh` script installs all required app dependencies, configures docker architecture and runs all required services.
-After a local app version is successfully launched in .env file, a dynamic link to tunnels is generated on Serveo.net and these tunnels are launched.
+`./start-serveo.sh` or `./start-ngrok.sh` script installs all required app dependencies, configures docker architecture and runs all required services.
+The difference is that serveo runs a tunnel through its unstable resource. Ngrok is more reliable and stable in this regard.
+After a local app version is successfully launched in .env file, a dynamic link to tunnels is generated on specific service (Serveo or Ngrok) and these tunnels are launched.
 
 As a result of the successful launch of these tunnels, the local project becomes available for public on the web.
 Such a specific deployment is needed for making bots,deployed on AWS, able to interact with your local environment.
