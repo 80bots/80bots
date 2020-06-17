@@ -33,6 +33,12 @@ If you consider to use your own custom hosts and ports please make sure you've a
 If you decide to use default configuration, verify that all specified ports are not used, otherwise you may easily redefine them in the abovementioned parameters 
 
 
+#### SERVICE APP CONFIG
+- `TUNNEL_SERVICE` - The name of the service you want to use to start the tunnel: `ngrok` or `serveo`.
+
+This configuration is a key configuration for starting Ngrok container. 
+
+
 #### NGROK APP CONFIG
 - `NGROK_AUTH` - Authentication key for Ngrok account.
 
@@ -128,15 +134,11 @@ https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-
 Assuming that all abovementioned Requirements are set, it is needed to do the following in order to start the application:
 1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`
 2. Configure the git config user’s data (name and email) https://help.github.com/en/github/using-git/setting-your-username-in-git
-3. If you'd like to run the application based on Ngrok, please proceed as follows: 
-   - Run `./start-ngrok.sh` and wait for the task completion. 
+3. Run `./start.sh` and wait for the task completion.
 
-    At the end of the installation, a browser opens with the necessary links.
+If you run the application based on Ngrok, a browser with required links opens after installation.
 
-If you'd like to run the application based on Serveo, please proceed as follows:
-   - Run `./start-serveo.sh` and wait for the task completion. 
-
-   At the end of installation, you'll see generated links to the application in terminal.
+If you run the application based on Serveo, you'll see generated links to the application in the terminal after installation. 
 
 NOTE:
 
@@ -167,7 +169,7 @@ Almost all rest work related to application development on Laravel as well as on
 
 ### FYI
 
-`./start-serveo.sh` or `./start-ngrok.sh` script installs all required app dependencies, configures docker architecture and runs all required services.
+`./start.sh` script installs all required app dependencies, configures docker architecture and runs all required services.
 The difference is that serveo runs a tunnel through its unstable resource. Ngrok is more reliable and stable in this regard.
 After a local app version is successfully launched in .env file, a dynamic link to tunnels is generated on specific service (Serveo or Ngrok) and these tunnels are launched.
 
