@@ -2,14 +2,14 @@ Brief information:
 
 This application is developed for simple local deployment of 80bots application architecture that includes the following repositories and they are added as submodules: 
 
-- Laravel APP (https://github.com/80bots/saas-laravel) is intended for:
+- Laravel APP (https://github.com/80bots/backend) is intended for:
   - API to interact with functional options;
   - Laravel Schedule to perform routine tasks such as sync and data update
   - Demonized Queue worker based on Supervisor for processing a queue of tasks set
   - Broadcasting - for notifying subscribers about events (notification via WebSockets)
   - Interaction with Primary database based on MySQL
   - Bots (instances) management (Start, Stop, Terminate etc.)
-- NextJS APP (https://github.com/80bots/saas-next.js) is intended for:
+- NextJS APP (https://github.com/80bots/frontend) is intended for:
   - convenient providing data related to bots
   - interaction with API for managing data and services
   - reviewing info about users and everything related
