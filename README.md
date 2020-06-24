@@ -1,9 +1,13 @@
+![80bots builder](misc/80bots.svg)
+
+# 80bots builder
+
 Brief information:
 
 This application is developed for simple local deployment of 80bots application architecture that includes the following repositories and they are added as submodules: 
 
 - Laravel APP (https://github.com/80bots/backend) is intended for:
-  - API to interact with functional options;
+  - Backend to interact with functional options;
   - Laravel Schedule to perform routine tasks such as sync and data update
   - Demonized Queue worker based on Supervisor for processing a queue of tasks set
   - Broadcasting - for notifying subscribers about events (notification via WebSockets)
@@ -21,10 +25,10 @@ This application is developed for simple local deployment of 80bots application 
 #Environment variables:
 
 #### PROXY SERVER CONFIG
-- `DOCKER_WEB_SERVER_HOST` - NextJS host, default: localhost (Custom usage example: 80bots.loc).
-- `DOCKER_WEB_SERVER_PORT` - NextJS port, default: 80 (Custom usage example: 80)
-- `DOCKER_API_SERVER_HOST` - API host, default: localhost (Custom usage example: api.80bots.loc)
-- `DOCKER_API_SERVER_PORT` - API port, default: 8080 (Custom usage example: 80)
+- `DOCKER_FRONTEND_SERVER_HOST` - NextJS host, default: localhost (Custom usage example: 80bots.loc).
+- `DOCKER_FRONTEND_SERVER_PORT` - NextJS port, default: 80 (Custom usage example: 80)
+- `DOCKER_BACKEND_SERVER_HOST` - API host, default: localhost (Custom usage example: api.80bots.loc)
+- `DOCKER_BACKEND_SERVER_PORT` - API port, default: 8080 (Custom usage example: 80)
 - `DOCKER_SOCKET_SERVER_HOST` - WS host, default: localhost (Custom usage example: ws.80bots.loc)
 - `DOCKER_SOCKET_SERVER_PORT` - WS post, default: 6001 (Custom usage example: 80)
 
@@ -55,15 +59,6 @@ This configuration is a key configuration for starting Ngrok container.
 This configuration is a key configuration for starting MySQL container and change of these parameters won’t have any influence until the container rebuild. 
 
 
-#### WEB APP CONFIG
-- `STRIPE_PUBLIC_KEY` - Stripe Public Key, default: none
-- `GOOGLE_CLIENT_ID` - Google client id, default: none
-- `FACEBOOK_CLIENT_ID` - Facebook client id, default: none
-- `SENTRY_DSN_WEB` - Sentry DSN, default: none
-
-The application also uses already defined parameters under hood from the PROXY SERVER CONFIG section. You may get acquainted with them in the appropriate section of  docker-compose.yml file services in the root of the project.
-
-
 ##### LARAVEL APP CONFIG
 
 - `APP_NAME` - Name of the Laravel App, default: 80bots
@@ -71,7 +66,7 @@ The application also uses already defined parameters under hood from the PROXY S
 - `APP_DEBUG` - Debug enabled, default: false (see more on https://laravel.com/docs)
 - `APP_KEY` - App secret key. Important! If the application key is not set, your user sessions and other encrypted data will not be secure!
 - `APP_URL` - The public accessible App server url, default: http://localhost:8080 (Based on PROXY SERVER CONFIG section)
-- `REACT_URL` - The public accessible Web app server url, default: http://localhost (Based on PROXY SERVER CONFIG section)
+- `WEB_CLIENT_URL` - The public accessible Web app server url, default: http://localhost (Based on PROXY SERVER CONFIG section)
 - `LOG_CHANNEL` - The log channel, default: stack
 - `BROADCAST_DRIVER` - Broadcast driver, default: redis. Warning! Changing of this parameter could affect the app stability and functionality
 - `QUEUE_CONNECTION` - Broadcast driver, default: redis. Warning! Changing of this parameter could affect the app stability and functionality
@@ -94,9 +89,6 @@ The application also uses already defined parameters under hood from the PROXY S
 - `MAIL_FROM_ADDRESS` - Mail from address, default: 80bots@inforca.com
 - `MAIL_FROM_NAME` - Mail from name, default: 80bots
 - `MAIL_ENCRYPTION` - Mail encryption, default: tls
-- `UP_TIME_MINUTES` - Default: 60
-- `CREDIT_UP_TIME` - Default: 1
-- `REGISTER_CREDITS` - Default: 0
 - `AWS_ACCESS_KEY_ID` - AWS access key ID, Default: none
 - `AWS_SECRET_ACCESS_KEY` - AWS secret access key, Default: none
 - `AWS_DEFAULT_REGION` - AWS default region, Default: us-east-2
@@ -106,8 +98,6 @@ The application also uses already defined parameters under hood from the PROXY S
 - `AWS_REGION` - AWS Region, Default: us-east-2
 - `AWS_URL` - AWS url for the generating the urls, default: https://d265x1r7kc6w9r.cloudfront.net
 - `AWS_CLOUDFRONT_INSTANCES_HOST` - AWS url for the instance configuration, default: https://d265x1r7kc6w9r.cloudfront.net
-- `STRIPE_KEY` - Stripe key, default: none
-- `STRIPE_SECRET` - Stripe secret, default: none
 - `SENTRY_LARAVEL_DSN` - Sentry DSN, default: none
 
 The extended description for each of the variables you can find here https://laravel.com/docs
@@ -143,13 +133,13 @@ If you run the application based on Serveo, you'll see generated links to the ap
 NOTE:
 
 Also, the following resources should be available in Web Browser:
-  - API - By default `http://localhost:8080/api/ping` or ${DOCKER_API_SERVER_HOST}:${DOCKER_API_SERVER_PORT} from the .env file
-  - WEB - By default `http://localhost:80` or ${DOCKER_WEB_SERVER_HOST}:${DOCKER_WEB_SERVER_PORT} from the .env file
+  - Backend - By default `http://localhost:8080/api/ping` or ${DOCKER_BACKEND_SERVER_HOST}:${DOCKER_BACKEND_SERVER_PORT} from the .env file
+  - Frontend - By default `http://localhost:80` or ${DOCKER_FRONTEND_SERVER_HOST}:${DOCKER_FRONTEND_SERVER_PORT} from the .env file
   - WebSockets - By default `http://localhost:6001` or ${DOCKER_SOCKET_SERVER_HOST}:${DOCKER_SOCKET_SERVER_PORT} from the .env file
 
 Additionally, after Initial setup, it is necessary to perform Laravel & Database configuration that is launched by a command in case if containers are already running:
 ```
-docker exec 80bots-api php artisan db:refresh
+docker exec 80bots-backend php artisan db:refresh
 ```
 Warning! This action will clear the database and populate it with default values!
 
@@ -213,9 +203,9 @@ Configuration of application architecture is provided in docker-compose.yml file
   
 5. NextJS server (React Web App)
 
-   This container build is implemented in `./docker-compose/web/Dockerfile`.
+   This container build is implemented in `./docker-compose/frontend/Dockerfile`.
 
-   When the container is started, Bash Script (`./docker-compose/web/bin/start.sh`) launches. Every time, when starting, re-generate the .env file, start the watcher or build compiled application, depending on `APP_ENV` , and start http server (NextJS)
+   When the container is started, Bash Script (`./docker-compose/frontend/bin/start.sh`) launches. Every time, when starting, re-generate the .env file, start the watcher or build compiled application, depending on `APP_ENV` , and start http server (NextJS)
   
 6. Laravel Echo Server (WebSockets)
 
@@ -230,11 +220,11 @@ Configuration of application architecture is provided in docker-compose.yml file
 
 Refresh Database:
 ```
-docker exec 80bots-api php artisan db:refresh
+docker exec 80bots-backend php artisan db:refresh
 ```
 Refresh Cache:
 ```
-docker exec 80bots-api php artisan cache:refresh
+docker exec 80bots-backend php artisan cache:refresh
 ```
 
 Rebuild all containers:
