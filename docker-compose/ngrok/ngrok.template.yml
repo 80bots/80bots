@@ -1,15 +1,15 @@
 web_addr: 0.0.0.0:4040
 authtoken: "${NGROK_AUTH}"
 tunnels:
-  web:
+  frontend:
     addr: proxy:80
     proto: http
-    subdomain: "${WEB_SUBDOMAIN}"
+    subdomain: "${FRONTEND_SUBDOMAIN}"
     bind_tls: true
-  api:
+  backend:
     addr: proxy:8080
     proto: http
-    subdomain: "${API_SUBDOMAIN}"
+    subdomain: "${BACKEND_SUBDOMAIN}"
     bind_tls: true
   ws:
     addr: proxy:6001

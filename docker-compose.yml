@@ -8,14 +8,14 @@ services:
     container_name: 80bots-proxy
     restart: unless-stopped
     ports:
-      - "${DOCKER_WEB_SERVER_PORT:-80}:${DOCKER_WEB_SERVER_PORT:-80}"
-      - "${DOCKER_API_SERVER_PORT:-8080}:${DOCKER_API_SERVER_PORT:-8080}"
+      - "${DOCKER_FRONTEND_SERVER_PORT:-80}:${DOCKER_FRONTEND_SERVER_PORT:-80}"
+      - "${DOCKER_BACKEND_SERVER_PORT:-8080}:${DOCKER_BACKEND_SERVER_PORT:-8080}"
       - "${DOCKER_SOCKET_SERVER_PORT:-6001}:${DOCKER_SOCKET_SERVER_PORT:-6001}"
     environment:
-      WEB_SERVER_HOST: "${DOCKER_WEB_SERVER_HOST:-localhost}"
-      WEB_SERVER_PORT: "${DOCKER_WEB_SERVER_PORT:-80}"
-      API_SERVER_HOST: "${DOCKER_API_SERVER_HOST:-localhost}"
-      API_SERVER_PORT: "${DOCKER_API_SERVER_PORT:-8080}"
+      FRONTEND_SERVER_HOST: "${DOCKER_FRONTEND_SERVER_HOST:-localhost}"
+      FRONTEND_SERVER_PORT: "${DOCKER_FRONTEND_SERVER_PORT:-80}"
+      BACKEND_SERVER_HOST: "${DOCKER_BACKEND_SERVER_HOST:-localhost}"
+      BACKEND_SERVER_PORT: "${DOCKER_BACKEND_SERVER_PORT:-8080}"
       SOCKET_SERVER_HOST: "${DOCKER_SOCKET_SERVER_HOST:-localhost}"
       SOCKET_SERVER_PORT: "${DOCKER_SOCKET_SERVER_PORT:-6001}"
     command: /bin/bash -c "envsubst < /etc/nginx/http-server.template.conf > /etc/nginx/conf.d/http-server.conf && exec nginx -g 'daemon off;'"
@@ -25,13 +25,13 @@ services:
       - ./docker-compose/proxy/src:/etc/nginx/src
       - ./docker-compose/proxy/conf.d:/etc/nginx/conf.d
     links:
-      - api
+      - backend
       - ws
-      - web
+      - frontend
     depends_on:
-      - api
+      - backend
       - ws
-      - web
+      - frontend
     networks:
       - app-network
 
@@ -42,8 +42,8 @@ services:
       context: ./docker-compose/ngrok
       args:
         NGROK_AUTH: "${NGROK_AUTH}"
-        WEB_SUBDOMAIN: "${WEB_SUBDOMAIN}"
-        API_SUBDOMAIN: "${API_SUBDOMAIN}"
+        FRONTEND_SUBDOMAIN: "${FRONTEND_SUBDOMAIN}"
+        BACKEND_SUBDOMAIN: "${BACKEND_SUBDOMAIN}"
         WS_SUBDOMAIN: "${WS_SUBDOMAIN}"
     container_name: 80bots-tunnel
     command: "ngrok start --all"
@@ -57,35 +57,31 @@ services:
     networks:
       - app-network
 
-  # React Web Client
-  # Image: ./docker-compose/web/Dockerfile
-  web:
-    container_name: 80bots-web
+  # Frontend
+  # Image: ./docker-compose/frontend/Dockerfile
+  frontend:
+    container_name: 80bots-frontend
     build:
-      context: ./docker-compose/web
+      context: ./docker-compose/frontend
     environment:
       NODE_ENV: "${APP_ENV:-local}"
       PORT: "8000"
       API_URL: "${API_URL}/api"
       SOCKET_URL: "${WS_URL}"
       SOCKET_AUTH_URL: "${API_URL}/broadcasting/auth"
-      STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY}"
-      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
-      FACEBOOK_CLIENT_ID: "${FACEBOOK_CLIENT_ID}"
-      SENTRY_DSN: "${SENTRY_DSN_WEB}"
     restart: unless-stopped
     volumes:
       - ./frontend:/var/www
     networks:
       - app-network
     depends_on:
-      - api
+      - backend
       - ws
 
-  # API
-  # Image: ./docker-compose/api/Dockerfile
-  api:
-    container_name: 80bots-api
+  # Backend
+  # Image: ./docker-compose/backend/Dockerfile
+  backend:
+    container_name: 80bots-backend
     build:
       context: ./docker-compose/backend
     restart: unless-stopped
@@ -159,6 +155,7 @@ services:
       - ./docker-compose/redis/data:/data
     networks:
       - app-network
+
 networks:
   app-network:
     driver: bridge
