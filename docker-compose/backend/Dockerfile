@@ -98,10 +98,6 @@ RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
 RUN pecl install mailparse \
     && docker-php-ext-enable mailparse
 
-# install mongodb ext
-RUN pecl install mongodb \
-    && docker-php-ext-enable mongodb
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
