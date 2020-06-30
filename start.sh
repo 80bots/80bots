@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#./install.sh
+./install.sh
 
 read_var() {
     VAR=$(grep $1 $2 | xargs)
