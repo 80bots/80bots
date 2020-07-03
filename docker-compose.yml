@@ -42,9 +42,9 @@ services:
       context: ./docker-compose/ngrok
       args:
         NGROK_AUTH: "${NGROK_AUTH}"
-        FRONTEND_SUBDOMAIN: "${FRONTEND_SUBDOMAIN}"
-        BACKEND_SUBDOMAIN: "${BACKEND_SUBDOMAIN}"
-        WS_SUBDOMAIN: "${WS_SUBDOMAIN}"
+        FRONTEND_SUBDOMAIN: "${FRONTEND_SUBDOMAIN:-frontend-80bots}"
+        BACKEND_SUBDOMAIN: "${BACKEND_SUBDOMAIN:-backend-80bots}"
+        WS_SUBDOMAIN: "${WS_SUBDOMAIN:-ws-80bots}"
     container_name: 80bots-tunnel
     command: "ngrok start --all"
     restart: unless-stopped
@@ -66,9 +66,9 @@ services:
     environment:
       NODE_ENV: "${APP_ENV:-local}"
       PORT: "8000"
-      API_URL: "${API_URL}/api"
-      SOCKET_URL: "${WS_URL}"
-      SOCKET_AUTH_URL: "${API_URL}/broadcasting/auth"
+      API_URL: "${API_URL:-http://localhost:8080}/api"
+      SOCKET_URL: "${WS_URL:-http://localhost:80}"
+      SOCKET_AUTH_URL: "${API_URL:-http://localhost:8080}}/broadcasting/auth"
     restart: unless-stopped
     volumes:
       - ./frontend:/var/www
@@ -105,12 +105,12 @@ services:
     build:
       context: ./docker-compose/ws
       args:
-        AUTH_HOST: "${API_URL}"
+        AUTH_HOST: "${API_URL:-http://localhost:8080}"
         AUTH_ENDPOINT: "/broadcasting/auth"
-        REDIS_HOST: "${REDIS_HOST}"
-        REDIS_PORT: "${REDIS_PORT}"
-        REDIS_PASSWORD: "${REDIS_PASSWORD}"
-        APP_DEBUG: "${APP_DEBUG}"
+        REDIS_HOST: "${REDIS_HOST:-redis}"
+        REDIS_PORT: "${REDIS_PORT:-6379}"
+        REDIS_PASSWORD: "${REDIS_PASSWORD:-root}"
+        APP_DEBUG: "${APP_DEBUG:-true}"
     container_name: 80bots-ws
     restart: unless-stopped
     volumes:

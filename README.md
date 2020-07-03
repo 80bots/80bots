@@ -22,7 +22,7 @@ This application is developed for simple local deployment of 80bots application 
   - various parsing
   - gathering info and providing it in special formats.
 
-#Environment variables:
+#Basic (Min required) Environment variables:
 
 #### PROXY SERVER CONFIG
 - `DOCKER_FRONTEND_SERVER_HOST` - NextJS host, default: localhost (Custom usage example: 80bots.loc).
