@@ -66,9 +66,9 @@ services:
     environment:
       NODE_ENV: "${APP_ENV:-local}"
       PORT: "8000"
-      API_URL: "${API_URL:-http://localhost:8080}/api"
+      API_URL: "${APP_URL:-http://localhost:8080}/api"
       SOCKET_URL: "${WS_URL:-http://localhost:80}"
-      SOCKET_AUTH_URL: "${API_URL:-http://localhost:8080}}/broadcasting/auth"
+      SOCKET_AUTH_URL: "${APP_URL:-http://localhost:8080}}/broadcasting/auth"
     restart: unless-stopped
     volumes:
       - ./frontend:/var/www
@@ -105,7 +105,7 @@ services:
     build:
       context: ./docker-compose/ws
       args:
-        AUTH_HOST: "${API_URL:-http://localhost:8080}"
+        AUTH_HOST: "${APP_URL:-http://localhost:8080}"
         AUTH_ENDPOINT: "/broadcasting/auth"
         REDIS_HOST: "${REDIS_HOST:-redis}"
         REDIS_PORT: "${REDIS_PORT:-6379}"

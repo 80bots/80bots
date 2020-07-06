@@ -35,7 +35,6 @@ setup_env() {
 
   echo "APP_URL=${SCHEMA}://${BACKEND_SUBDOMAIN}.${DOMAIN}" >> .env
   echo "WEB_CLIENT_URL=${SCHEMA}://${FRONTEND_SUBDOMAIN}.${DOMAIN}" >> .env
-  echo "API_URL=${SCHEMA}://${BACKEND_SUBDOMAIN}.${DOMAIN}" >> .env
   echo "WS_URL=${SCHEMA}://${WS_SUBDOMAIN}.${DOMAIN}" >> .env
 
   if [ "$SERVICE" == "ngrok" ]; then
