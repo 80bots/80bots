@@ -1,10 +1,28 @@
 #!/bin/bash
+
 GIT_NAME="$(git config user.name)"
 GIT_EMAIL="$(git config user.email)"
 
-if [[ -z $GIT_NAME || -z $GIT_EMAIL ]]
- then
-  echo "Please configure git user name and email" && exit -1
+# Function check if the line is empty by the user.
+function checkDefault() {
+  while read -r -p "$1" DATA; do
+    DATA=${DATA,,}
+    if [[ "$DATA" =~ ^()$ ]]; then
+      continue
+    else
+      echo "$DATA"
+      break
+    fi
+  done
+}
+
+if [[ -z $GIT_NAME || -z $GIT_EMAIL ]]; then
+
+  NAME=$(checkDefault "Please enter your git name $(tput setaf 1)(required)$(tput sgr0): ")
+  git config user.name "$NAME"
+  EMAIL=$(checkDefault "Please enter your git email $(tput setaf 1)(required)$(tput sgr0): ")
+  git config user.email "$EMAIL"
+
 fi
 
 git submodule init
