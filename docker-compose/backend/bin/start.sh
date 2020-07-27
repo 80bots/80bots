@@ -5,7 +5,9 @@ touch /var/www/storage/logs/cron.log
 cd /var/www && rm -rf .env && touch .env && chgrp -R www-data .env
 
 # Clear existing logs
-rm -rf /var/www/storage/logs/*
+cd /var/www && touch storage/logs/cron.log && touch storage/logs/laravel.log && touch storage/logs/supervisor-queue-worker.log
+chmod 775 -R /var/www/storage/logs
+chown -R 1001:www-data /var/www/storage/logs
 
 echo "APP_NAME=${APP_NAME:-80bots}" >>./.env
 echo "APP_ENV=${APP_ENV:-local}" >>./.env
@@ -46,9 +48,7 @@ echo "WEB_CLIENT_URL=${WEB_CLIENT_URL:-http://localhost:8080}" >>./.env
 
 echo "SENTRY_LARAVEL_DSN=$SENTRY_LARAVEL_DSN" >>./.env
 
-chmod 775 -R storage/logs
 chgrp -R www-data storage
-
 chgrp -R www-data bootstrap/cache
 
 php artisan cache:refresh
