@@ -37,11 +37,10 @@ echo "REDIS_PORT=${REDIS_PORT:-6379}" >>./.env
 
 echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >>./.env
 echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >>./.env
-echo "AWS_BUCKET=$AWS_BUCKET" >>./.env
+echo "AWS_BUCKET=${AWS_BUCKET:-80bots}" >>./.env
 echo "AWS_IMAGE_ID=$AWS_IMAGE_ID" >>./.env
-echo "AWS_INSTANCE_TYPE=$AWS_INSTANCE_TYPE" >>./.env
-echo "AWS_REGION=$AWS_REGION" >>./.env
-echo "AWS_URL=$AWS_URL" >>./.env
+echo "AWS_INSTANCE_TYPE=${AWS_INSTANCE_TYPE:-t3.medium}" >>./.env
+echo "AWS_REGION=${AWS_REGION:-us-east-2}" >>./.env
 echo "AWS_CLOUDFRONT_INSTANCES_HOST=$AWS_CLOUDFRONT_INSTANCES_HOST" >>./.env
 
 echo "WEB_CLIENT_URL=${WEB_CLIENT_URL:-http://localhost:8080}" >>./.env
