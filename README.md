@@ -52,11 +52,7 @@
 
   - `AWS_ACCESS_KEY_ID` - AWS access key ID;
   - `AWS_SECRET_ACCESS_KEY` - AWS secret access key;
-  - `AWS_BUCKET` - AWS S3 bucket;
   - `AWS_IMAGE_ID` - Default AWS Image id;
-  - `AWS_INSTANCE_TYPE` - Default AWS Bot instance type;
-  - `AWS_REGION` - AWS Region;
-  - `AWS_URL` - AWS url for the generating the urls;
   - `AWS_CLOUDFRONT_INSTANCES_HOST` - AWS url for the instance configuration.
 
   This configuration is a key configuration for starting  80bots. 
@@ -165,7 +161,10 @@ docker exec 80bots-backend php artisan db:refresh
   - `REDIS_HOST` - Redis host, default: redis. The default value uses linked container and interact with it using service's name. If you wish to use you own redis server, please provide the public accessible host;
   - `REDIS_PORT` - Redis port, default: 6379;
   - `REDIS_PASSWORD` - Redis password, default: root;
-  - `SENTRY_LARAVEL_DSN` - Sentry DSN, default: none.
+  - `SENTRY_LARAVEL_DSN` - Sentry DSN, default: none;
+  - `AWS_BUCKET` - AWS S3 bucket, default:80bots;
+  - `AWS_INSTANCE_TYPE` - Default AWS Bot instance type, default: t3.medium;
+  - `AWS_REGION` - AWS Region, default: us-east-2.  
 
   The extended description for each of the variables you can find here https://laravel.com/docs.
 
