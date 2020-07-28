@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 80bots
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+Resources:
+  80botsInstance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      Comment1: 'Save deploy.sh to /home/ec2-user/'
+      AWS::CloudFormation::Init:
+        configSets: 
+          Install: 
+            - Install
+        Install:
+          files:
+            /home/ec2-user/deploy.sh:
+              content: 
+                'Fn::Join':
+                  - ''
+                  - - |
+                      #!/bin/bash
+                      DIR=~/80bots
+                      if [-d $DIR]; then
+                       cd ~/$DIR && git pull
+                       cd "$DIR" && ./start.sh
+                      else
+                       cd ~/ && git clone git@github.com:80bots/80bots.git
+                       cd "$DIR" && ./configure.sh
+                       echo "$(tput setaf 2)database refresh...$(tput sgr0)"
+                       sleep 5
+                       cd "$DIR" && docker exec 80bots-backend php artisan db:refresh
+                       echo "$(tput setaf 2)database refresh done$(tput sgr0)"
+                      fi
+              mode : "000700"
+              owner: ec2-user
+              group: ec2-user
+    Properties:
+      KeyName:
+        Ref: KeyName
+      InstanceType: t3a.medium
+      ImageId: ami-0bdcc6c05dec346bf #Amazon Linux AMI 2018.03.0 (HVM)
+      Tags:
+        - Key: Name
+          Value: 80bots
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - - |
+              #!/bin/bash -xe
+              yum update -y
+              yum install -y aws-cfn-bootstrap
+              yum install -y gcc-c++ make
+              curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+              yum install -y nodejs
+              npm install yarn -g
+              yum install -y git
+              yum install -y php73
+              curl -sS https://getcomposer.org/installer | sudo php
+              mv composer.phar /usr/local/bin/composer
+              ln -s /usr/local/bin/composer /usr/bin/composer
+              yum install -y docker
+              service docker start
+              usermod -a -G docker ec2-user
+              curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-`uname -s`-`uname -m` | sudo tee /usr/local/bin/docker-compose > /dev/null
+              chmod +x /usr/local/bin/docker-compose
+              ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+            - |
+              # Install the files and packages from the metadata
+            - '/opt/aws/bin/cfn-init -v '
+            - '         --stack '
+            - !Ref 'AWS::StackName'
+            - '         --resource 80botsInstance '
+            - '         --configsets Install '
+            - '         --region '
+            - !Ref 'AWS::Region'
+      SecurityGroups:
+        - Ref: 80botsSecurityGroup
+  80botsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: 80bots-single-server
+      GroupDescription: all in
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIpv6: ::/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIpv6: ::/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIpv6: ::/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIpv6: ::/0
+        - IpProtocol: tcp
+          FromPort: 6001
+          ToPort: 6001
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 6001
+          ToPort: 6001
+          CidrIpv6: ::/0
+  IPAddress:
+    Type: AWS::EC2::EIP
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId:
+        Ref: 80botsInstance
+      EIP:
+        Ref: IPAddress
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value:
+      Ref: 80botsInstance
+  InstanceIPAddress:
+    Description: IP address of the newly created EC2 instance
+    Value:
+      Ref: IPAddress
