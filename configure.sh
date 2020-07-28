@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./install.sh
+
 # Variables.
 ENV_FILE=$PWD/.env
 
@@ -16,44 +18,76 @@ function checkDefault() {
   done
 }
 
+# Function check yes or no.
+function checkYesOrNo() {
+  while read -r -p "$1" DATA; do
+    DATA=${DATA}
+    if [[ "$DATA" =~ ^(yes|y|no|n)$ ]]; then
+      echo "$DATA"
+      break
+    else
+      continue
+    fi
+  done
+}
+
+# Function check service.
+function checkService() {
+  while read -r -p "$1" DATA; do
+    DATA=${DATA}
+    if [[ "$DATA" =~ ^(aws|ngrok|serveo)$ ]]; then
+      echo "$DATA"
+      break
+    else
+      continue
+    fi
+  done
+}
+
 echo "$(tput setaf 2)Welcome to 80bots$(tput sgr0)"
 
 ANSWER=$(checkDefault "Do you have a .env file? [y/N]: ")
 
 if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   if [ -f $ENV_FILE ]; then
-    echo "Please run ./start.sh"
-    exit 0
+    ./start.sh
   else
     echo "We didn't find the file. Please import by $PWD path"
   fi
 elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
 
-  SERVICE=$(checkDefault "The name of the service you want to use to start [aws | ngrok | serveo] $(tput setaf 1)(required)$(tput sgr0): ")
+  SERVICE=$(checkService "The name of the service you want to use to start [aws|ngrok|serveo] $(tput setaf 1)(required)$(tput sgr0): ")
 
   if [[ "$SERVICE" =~ ^(aws)$ ]]; then
     PUBLIC_URL=$(checkDefault "Specify public DNS (IPv4)
-    > for example: $(tput setaf 2)ec2-*-**-**-***.us-east-2.compute.amazonaws.com$(tput sgr0)
+    > for example: $(tput setaf 2)ec2-***.us-east-2.compute.amazonaws.com$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
 
   elif [[ "$SERVICE" =~ ^(ngrok)$ ]]; then
     NGROK_AUTH=$(checkDefault "Authentication key for Ngrok account $(tput setaf 1)(required)$(tput sgr0): ")
   fi
 
-  APP_KEY=$(checkDefault "App secret key
-    > for example: $(tput setaf 2)base64:c*****o/h**********3Y/J*******Mo=$(tput sgr0)
-    > $(tput setaf 1)(required)$(tput sgr0): ")
+  GENERATE_APP_KEY=$(checkYesOrNo "You are want generate APP_KEY? [y/N] $(tput setaf 1)(required)$(tput sgr0): ")
+  if [[ "$GENERATE_APP_KEY" =~ ^(yes|y)$ ]]; then
+    APP_KEY=`cd backend && sudo php artisan key:generate --show`
+    echo "$APP_KEY"
+  elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
+    APP_KEY=$(checkDefault "App secret key
+      > for example: $(tput setaf 2)base64:***/***/***=$(tput sgr0)
+      > $(tput setaf 1)(required)$(tput sgr0): ")
+  fi
+
   AWS_ACCESS_KEY_ID=$(checkDefault "AWS access key ID
-    > for example: $(tput setaf 2)1dD**********************JHKH6d$(tput sgr0)
+    > for example: $(tput setaf 2)***$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_SECRET_ACCESS_KEY=$(checkDefault "AWS secret access key
-    > for example: $(tput setaf 2)+g4g*******************************Jghfd6$(tput sgr0)
+    > for example: $(tput setaf 2)+***J$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_IMAGE_ID=$(checkDefault "Default AWS Image id
-    > for example: $(tput setaf 2)ami-0f**********h35$(tput sgr0)
+    > for example: $(tput setaf 2)ami-***$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_CLOUDFRONT_INSTANCES_HOST=$(checkDefault "AWS url for the instance configuration
-    > for example: $(tput setaf 2)https://d2**********9r.cloudfront.net$(tput sgr0)
+    > for example: $(tput setaf 2)https://***.cloudfront.net$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
 
   cd $PWD && rm -rf .env && touch .env
@@ -72,5 +106,5 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
  ./start.sh
 
 else
-  exit -1
+  exit 0
 fi

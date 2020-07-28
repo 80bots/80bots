@@ -102,6 +102,7 @@ services:
   # Web Sockets based on Laravel Echo Server
   # Image: https://hub.docker.com/r/oanhnn/laravel-echo-server
   ws:
+    container_name: 80bots-ws
     build:
       context: ./docker-compose/ws
       args:
@@ -111,7 +112,6 @@ services:
         REDIS_PORT: "${REDIS_PORT:-6379}"
         REDIS_PASSWORD: "${REDIS_PASSWORD:-root}"
         APP_DEBUG: "${APP_DEBUG:-true}"
-    container_name: 80bots-ws
     restart: unless-stopped
     volumes:
       - ./docker-compose/ws/conf.d:/app

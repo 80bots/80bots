@@ -1,7 +1,5 @@
 #!/bin/bash
 
-./install.sh
-
 # Function for reading a .env file
 read_var() {
   VAR=$(grep $1 $2 | xargs)
