@@ -91,6 +91,9 @@ docker exec 80bots-backend php artisan db:refresh
 
   It is necessary to have access to Github 80bots repo `https://github.com/80bots` in order to install and launch 80bots.  An account created in aws console is `https://aws.amazon.com/console/`.
   
+#### NOTE: 
+  You can run service creation manually following 3-6 points(Setup) as well as using was cli, just runing `{appRoot}/deploy-aws.sh`;
+  
 #### Setup: 
 
   1. Sign in to AWS Management Console, select EC2<br/><br/>
@@ -150,11 +153,17 @@ docker exec 80bots-backend php artisan db:refresh
   - `PUBLIC_URL` - public address of the instance run by you<br/><br/>
   ![public-url](misc/images/public_url.png)<br/><br/>
   - `APP_KEY` - App secret key. Important! If the application key is not set, your user sessions and other encrypted data will not be secure!;
-  - `AWS_ACCESS_KEY_ID` - AWS access key ID;<br/><br/>
-  ![aws-access-key-id](misc/images/aws_access_key_id.png)<br/><br/>
-  - `AWS_SECRET_ACCESS_KEY` - AWS secret access key;
+  - `AWS_ACCESS_KEY_ID` - AWS access key ID;
+  - `AWS_SECRET_ACCESS_KEY` - AWS secret access key;<br/><br/>
+   ![aws-access-key-id](misc/images/aws_access_key_id.png)<br/><br/>
+   ![create-key](misc/images/create_key.png)<br/><br/>
+   ![download-key](misc/images/download_key.png)<br/><br/>
   - `AWS_IMAGE_ID` - Default AWS Image id;
-  - `AWS_CLOUDFRONT_INSTANCES_HOST` - AWS url for the instance configuration.
+  
+  - `AWS_CLOUDFRONT_INSTANCES_HOST` - AWS url for the instance configuration.<br/><br/>
+   ![cloudFront](misc/images/cloudFront.png)<br/><br/>
+   ![cloudFront_url](misc/images/cloudFront_url.png)<br/><br/>
+  
   
   3. After completion of all installs, 80bots will be available by instance public DNS address,  with which all above-mentioned operations were performed.
   
