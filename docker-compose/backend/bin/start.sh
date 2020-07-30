@@ -9,14 +9,11 @@ cd /var/www && touch storage/logs/cron.log && touch storage/logs/laravel.log && 
 chmod 775 -R /var/www/storage/logs
 chown -R 1001:www-data /var/www/storage/logs
 
+echo "APP_KEY=$APP_KEY" >>./.env
 echo "APP_NAME=${APP_NAME:-80bots}" >>./.env
 echo "APP_ENV=${APP_ENV:-local}" >>./.env
-echo "APP_KEY=$APP_KEY" >>./.env
 echo "APP_DEBUG=${APP_DEBUG:-true}" >>./.env
-echo "APP_URL=${APP_URL:-http://localhost:8080}" >>./.env
-
 echo "LOG_CHANNEL=${LOG_CHANNEL:-stack}" >>./.env
-echo "WS_URL=${WS_URL:-http://localhost:80}" >>./.env
 
 echo "DB_CONNECTION=${DB_CONNECTION:-mysql}" >>./.env
 echo "DB_HOST=${DB_HOST:-mysql}" >>./.env
@@ -37,13 +34,18 @@ echo "REDIS_PORT=${REDIS_PORT:-6379}" >>./.env
 
 echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >>./.env
 echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >>./.env
-echo "AWS_BUCKET=${AWS_BUCKET:-80bots}" >>./.env
-echo "AWS_IMAGE_ID=$AWS_IMAGE_ID" >>./.env
-echo "AWS_INSTANCE_TYPE=${AWS_INSTANCE_TYPE:-t3.medium}" >>./.env
 echo "AWS_REGION=${AWS_REGION:-us-east-2}" >>./.env
+echo "AWS_BUCKET=${AWS_BUCKET:-80bots}" >>./.env
 echo "AWS_CLOUDFRONT_INSTANCES_HOST=$AWS_CLOUDFRONT_INSTANCES_HOST" >>./.env
+echo "AWS_SCREENSHOTS_BUCKET=${AWS_SCREENSHOTS_BUCKET:-80bots-issued-screenshots}" >>./.env
+echo "AWS_IMAGE_ID=${AWS_IMAGE_ID:-ami-0f7ac8e6b58f47535}" >>./.env
+echo "AWS_INSTANCE_TYPE=${AWS_INSTANCE_TYPE:-t3.medium}" >>./.env
+echo "AWS_VOLUME_SIZE=${AWS_VOLUME_SIZE:-32}" >>./.env
+echo "AWS_INSTANCE_METADATA=${AWS_INSTANCE_METADATA:-http://169.254.169.254/latest/meta-data/}" >>./.env
 
-echo "WEB_CLIENT_URL=${WEB_CLIENT_URL:-http://localhost:8080}" >>./.env
+echo "WS_URL=${WS_URL:-http://localhost:80}" >>./.env
+echo "APP_URL=${APP_URL:-http://localhost:8080}" >>./.env
+echo "WEB_CLIENT_URL=${WEB_CLIENT_URL:-http://localhost:80}" >>./.env
 
 echo "SENTRY_LARAVEL_DSN=$SENTRY_LARAVEL_DSN" >>./.env
 

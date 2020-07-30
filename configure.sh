@@ -78,13 +78,10 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   fi
 
   AWS_ACCESS_KEY_ID=$(checkDefault "AWS access key ID
-    > for example: $(tput setaf 2)***$(tput sgr0)
+    > for example: $(tput setaf 2)fdf***f5$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_SECRET_ACCESS_KEY=$(checkDefault "AWS secret access key
-    > for example: $(tput setaf 2)+***J$(tput sgr0)
-    > $(tput setaf 1)(required)$(tput sgr0): ")
-  AWS_IMAGE_ID=$(checkDefault "Default AWS Image id
-    > for example: $(tput setaf 2)ami-***$(tput sgr0)
+    > for example: $(tput setaf 2)fs+***Jv$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_CLOUDFRONT_INSTANCES_HOST=$(checkDefault "AWS url for the instance configuration
     > for example: $(tput setaf 2)https://***.cloudfront.net$(tput sgr0)
@@ -92,15 +89,12 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
 
   cd $PWD && rm -rf .env && touch .env
 
- echo "$SERVICE"
-
   echo "SERVICE=$SERVICE" >> ./.env
   echo "PUBLIC_URL=$PUBLIC_URL" >> ./.env
   echo "NGROK_AUTH=$NGROK_AUTH" >> ./.env
   echo "APP_KEY=$APP_KEY" >> ./.env
   echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> ./.env
   echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> ./.env
-  echo "AWS_IMAGE_ID=$AWS_IMAGE_ID" >> ./.env
   echo "AWS_CLOUDFRONT_INSTANCES_HOST=$AWS_CLOUDFRONT_INSTANCES_HOST" >> ./.env
 
  ./start.sh
