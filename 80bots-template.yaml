@@ -22,22 +22,6 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Enabled: true
-        DefaultCacheBehavior:
-          TargetOriginId:
-            Ref: 80botsBucket
-          ViewerProtocolPolicy: redirect-to-https
-          MinTTL: 0
-          AllowedMethods:
-            - HEAD
-            - GET
-          CachedMethods:
-            - HEAD
-            - GET
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
         Origins:
           - DomainName:
               Fn::Join:
@@ -46,19 +30,24 @@ Resources:
                   - s3.us-east-2.amazonaws.com
             Id:
               Ref: 80botsBucket
-            CustomOriginConfig:
-              HTTPPort: '80'
-              HTTPSPort: '443'
-              OriginProtocolPolicy: http-only
+            S3OriginConfig: {}
+        Enabled: true
+        HttpVersion: http2
+        DefaultCacheBehavior:
+          Compress: true
+          AllowedMethods:
+            - HEAD
+            - GET
+            - OPTIONS
+          TargetOriginId:
+            Ref: 80botsBucket
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
-      Tags:
-        - Key: Name
-          Value:
-            Fn::Join:
-              - '-'
-              - - Ref: AWS::StackName
-                - site-cdn
   80botsInstance:
     Type: AWS::EC2::Instance
     Metadata:
