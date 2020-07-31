@@ -8,28 +8,16 @@ Parameters:
 Resources:
   80botsBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
     Properties:
-      BucketName: 80bots-test
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      PolicyDocument:
-        Id: MyPolicy
-        Version: '2012-10-17'
-        Statement:
-        - Sid: PublicReadForGetBucketObjects
-          Effect: Allow
-          Principal: '*'
-          Action: s3:GetObject
-          Resource:
-            Fn::Join:
-              - ''
-              - - 'arn:aws:s3:::'
-                - Ref: 80botsBucket
-                - '/*'
-      Bucket:
-        Ref: 80botsBucket
+      BucketName: 80bots
+      AccessControl: BucketOwnerFullControl
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, HEAD]
+            AllowedOrigins: ['*']
+            Id: 80botsCORSRuleId
+            MaxAge: 0
   CloudFront:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -207,3 +195,7 @@ Outputs:
     Description: IP address of the newly created EC2 instance
     Value:
       Ref: IPAddress
+  Bucket:
+    Description: 80bots S3 Bucket
+    Value:
+      Ref: 80botsBucket
