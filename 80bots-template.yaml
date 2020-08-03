@@ -5,11 +5,15 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  BucketName:
+    Type: String
+    Description: Name s3 bucket
 Resources:
   80botsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: 80bots
+      BucketName:
+        Ref: BucketName
       AccessControl: BucketOwnerFullControl
       CorsConfiguration:
         CorsRules:
@@ -18,7 +22,7 @@ Resources:
             AllowedOrigins: ['*']
             Id: 80botsCORSRuleId
             MaxAge: 0
-  CloudFront:
+  80botsCloudFront:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
@@ -34,7 +38,7 @@ Resources:
         Enabled: true
         HttpVersion: http2
         DefaultCacheBehavior:
-          Compress: true
+          Compress: false
           AllowedMethods:
             - HEAD
             - GET
@@ -42,9 +46,15 @@ Resources:
           TargetOriginId:
             Ref: 80botsBucket
           ForwardedValues:
-            QueryString: false
+            QueryString: true
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
             Cookies:
               Forward: none
+          DefaultTTL: 0
+          MaxTTL: 0
+          MinTTL: 0
           ViewerProtocolPolicy: allow-all
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
