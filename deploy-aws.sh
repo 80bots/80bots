@@ -36,11 +36,17 @@ if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   KEY_CLOUD_FORMATION=$(checkDefault "KeyPair name
   > for example: $(tput setaf 2)keyCloudFormation$(tput sgr0)
   > $(tput setaf 1)(required)$(tput sgr0): ")
- aws cloudformation create-stack --stack-name stack-80bots --template-body file://80bots-template.yaml --parameters ParameterKey=KeyName,ParameterValue=${KEY_CLOUD_FORMATION}
+  AWS_BUCKET=$(checkDefault "s3 bucket name
+  > for example: $(tput setaf 2)80bots$(tput sgr0)
+  > $(tput setaf 1)(required)$(tput sgr0): ")
+ aws cloudformation create-stack --stack-name stack-80bots --template-body file://80bots-template.yaml --parameters ParameterKey=KeyName,ParameterValue=${KEY_CLOUD_FORMATION} ParameterKey=BucketName,ParameterValue=${AWS_BUCKET}
 elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
  aws configure
   KEY_CLOUD_FORMATION=$(checkDefault "KeyPair name
   > for example: $(tput setaf 2)keyCloudFormation$(tput sgr0)
   > $(tput setaf 1)(required)$(tput sgr0): ")
- aws cloudformation create-stack --stack-name stack-80bots --template-body file://80bots-template.yaml --parameters ParameterKey=KeyName,ParameterValue=${KEY_CLOUD_FORMATION}
+  AWS_BUCKET=$(checkDefault "s3 bucket name
+  > for example: $(tput setaf 2)80bots$(tput sgr0)
+  > $(tput setaf 1)(required)$(tput sgr0): ")
+ aws cloudformation create-stack --stack-name stack-80bots --template-body file://80bots-template.yaml --parameters ParameterKey=KeyName,ParameterValue=${KEY_CLOUD_FORMATION} ParameterKey=BucketName,ParameterValue=${AWS_BUCKET}
 fi
