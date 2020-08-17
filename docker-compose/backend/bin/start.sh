@@ -3,7 +3,8 @@ touch /var/www/storage/logs/cron.log
 
 # Setup env
 cd /var/www && rm -rf .env && touch .env && chgrp -R www-data .env
-
+#
+cd /var/www/storage/app && rm -rf scripts
 # Clear existing logs
 cd /var/www && touch storage/logs/cron.log && touch storage/logs/laravel.log && touch storage/logs/supervisor-queue-worker.log
 chmod 775 -R /var/www/storage/logs
@@ -38,7 +39,7 @@ echo "AWS_REGION=${AWS_REGION:-us-east-2}" >>./.env
 echo "AWS_BUCKET=${AWS_BUCKET:-80bots}" >>./.env
 echo "AWS_CLOUDFRONT_INSTANCES_HOST=$AWS_CLOUDFRONT_INSTANCES_HOST" >>./.env
 echo "AWS_SCREENSHOTS_BUCKET=${AWS_SCREENSHOTS_BUCKET:-80bots-issued-screenshots}" >>./.env
-echo "AWS_IMAGE_ID=${AWS_IMAGE_ID:-ami-0f7ac8e6b58f47535}" >>./.env
+echo "AWS_IMAGE_ID=${AWS_IMAGE_ID:-ami-078271637235b141a}" >>./.env
 echo "AWS_INSTANCE_TYPE=${AWS_INSTANCE_TYPE:-t3.medium}" >>./.env
 echo "AWS_VOLUME_SIZE=${AWS_VOLUME_SIZE:-32}" >>./.env
 echo "AWS_INSTANCE_METADATA=${AWS_INSTANCE_METADATA:-http://169.254.169.254/latest/meta-data/}" >>./.env
