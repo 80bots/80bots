@@ -3,7 +3,7 @@
 GIT_NAME="$(git config user.name)"
 GIT_EMAIL="$(git config user.email)"
 
-# Function check if the line is empty by the user.
+# Validator function that checks whether a variable is empty.
 function checkDefault() {
   while read -r -p "$1" DATA; do
     DATA=${DATA,,}
