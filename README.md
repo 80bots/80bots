@@ -61,7 +61,7 @@
 
 #### Assuming that all abovementioned Requirements are set, it is needed to do the following in order to start the application:
   
-  1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example`;
+  1. Create and configure `{appRoot}/.env` file according to provided example `{appRoot}/.env.example` or start `configure.sh`;
   2. Configure the git config user’s data (name and email) https://help.github.com/en/github/using-git/setting-your-username-in-git;
   3. Run `./start.sh` and wait for the task completion.
 
@@ -313,11 +313,16 @@ docker exec 80bots-backend php artisan db:refresh
 
 #### Ngrok
 
-7. Ngrok
-Ngrok service is based on the image: https://hub.docker.com/r/wernight/ngrok/
+   Ngrok service is based on the image: https://hub.docker.com/r/wernight/ngrok/
 
-When launching the application, a new image is formed, based on Ngrok image.
-The server is set in the way that after launching a container, the `ngrok.yml` root file is replaced with the one containing necessary configurations to provide the ability of running multiple simultaneous tunnels.
+   When launching the application, a new image is formed, based on Ngrok image.
+   The server is set in the way that after launching a container, the `ngrok.yml` root file is replaced with the one containing necessary configurations to provide the ability of running multiple simultaneous tunnels.
+
+## Shell Scripts:
+   - `install.sh` - This script clones frontend and backend from a git repository and installs a required software.
+   - `start.sh` - this script runs an application for selected service and generates required variables for .env file. 
+   - `configure.sh` - this script runs install.sh, creates .env file and generates required variables, and then runs start.sh(!!!Removes an existing .env file, if it exists)
+   - `deploy-aws.sh` - this script runs cloudformation `80bots-template.yaml` template that installs required resources to aws. It is necessary for correct work of 80bots basing on aws instance.
 ## Additional supporting commands:
 
 #### Refresh Database:
