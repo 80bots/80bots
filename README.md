@@ -261,6 +261,13 @@ docker exec 80bots-backend php artisan db:refresh
   - `FRONTEND_SUBDOMAIN` - Frontend subdomain for setting up ngrok tunnel;
   - `BACKEND_SUBDOMAIN`- Backend subdomain for setting up ngrok tunnel;
   - `WS_SUBDOMAIN`- Ws subdomain for setting up ngrok tunnel.
+  
+##### HELPERS:
+
+  When writing custom scripts, you can use an internal function - `notify()`, that output required statuses, script work progress to Workforce page. It is not needed to import this function. 
+  
+  `notify()` - receives one parameter (status). This parameter should have a string type, otherwise the function throws an error. 
+  
 
 ## Architecture overview
 
