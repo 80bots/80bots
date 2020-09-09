@@ -53,6 +53,7 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
 
   SERVICE=$(checkService "Install a service basing on which you'd like to run an application [aws|ngrok|serveo] $(tput setaf 1)(required)$(tput sgr0): ")
   if [[ "$SERVICE" =~ ^(aws)$ ]]; then
+    APP_ENV="production"
     PUBLIC_URL=$(checkDefault "Enter your public DNS (IPv4)
     > for example: $(tput setaf 2)ec2-***.us-east-2.compute.amazonaws.com$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
@@ -85,6 +86,9 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
 
   cd $PWD && rm -rf .env && touch .env
 
+  if [[ $APP_ENV == 'production' ]]; then
+    echo "APP_ENV=$APP_ENV" >> ./.env
+  fi
   echo "SERVICE=$SERVICE" >> ./.env
   echo "PUBLIC_URL=$PUBLIC_URL" >> ./.env
   echo "NGROK_AUTH=$NGROK_AUTH" >> ./.env
