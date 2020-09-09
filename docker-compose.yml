@@ -64,7 +64,8 @@ services:
     build:
       context: ./docker-compose/frontend
     environment:
-      NODE_ENV: "${APP_ENV:-local}"
+      APP_ENV: "${APP_ENV:-local}"
+      NODE_PATH: "${NODE_PATH:-./}"
       PORT: "8000"
       API_URL: "${APP_URL:-http://localhost:8080}/api"
       SOCKET_URL: "${WS_URL:-http://localhost:80}"
