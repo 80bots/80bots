@@ -21,11 +21,6 @@
   - Interaction with API for managing data and services;
   - Reviewing info about users and everything related;
   - Configuring custom scripts and parameters of launching bots and instances on which they will be installed.
-  
-##### Bot scripts (https://github.com/80bots/puppeteer), are intended for:
-
-  - Various parsing;
-  - Gathering info and providing it in special formats.
 
 ## Requirements
 
