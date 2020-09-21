@@ -1,4 +1,4 @@
-![80bots builder](misc/images/80bots.svg)
+![80bots builder](misc/images/80bots_logo.svg)
 
 # 80bots builder
 
