@@ -86,6 +86,7 @@ services:
     build:
       context: ./docker-compose/backend
     restart: unless-stopped
+    ports: [22]
     env_file:
       - .env
     links:
