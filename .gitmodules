@@ -1,6 +1,6 @@
 [submodule "backend"]
 	path = backend
-	url = git@github.com:80bots/backend.git
+	url = https://github.com/80bots/backend.git
 [submodule "frontend"]
 	path = frontend
-	url = git@github.com:80bots/frontend.git
+	url = https://github.com/80bots/frontend.git
