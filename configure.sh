@@ -1,6 +1,36 @@
 #!/bin/bash
 
-./install.sh
+GIT_NAME="$(git config user.name)"
+GIT_EMAIL="$(git config user.email)"
+
+# Validator function that checks whether a variable is empty.
+function checkDefault() {
+  while read -r -p "$1" DATA; do
+    DATA=${DATA,,}
+    if [[ "$DATA" =~ ^()$ ]]; then
+      continue
+    else
+      echo "$DATA"
+      break
+    fi
+  done
+}
+
+if [[ -z $GIT_NAME || -z $GIT_EMAIL ]]; then
+
+  NAME=$(checkDefault "Please enter your git name $(tput setaf 1)(required)$(tput sgr0): ")
+  git config user.name "$NAME"
+  EMAIL=$(checkDefault "Please enter your git email $(tput setaf 1)(required)$(tput sgr0): ")
+  git config user.email "$EMAIL"
+
+fi
+
+git submodule init
+git submodule update
+
+composer install  --working-dir=$PWD/backend --ignore-platform-reqs
+yarn --cwd $PWD/frontend
+
 # Variables.
 ENV_FILE=$PWD/.env
 # Validator function that checks whether a variable is empty.
@@ -40,7 +70,7 @@ function checkService() {
   done
 }
 
-echo "$(tput setaf 2)Welcome to 80bots!!!$(tput sgr0)"
+echo "$(tput setaf 2)Welcome to 80bots!$(tput sgr0)"
 
 ANSWER=$(checkDefault "Do you have .env file configured? [y/N]: ")
 if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
@@ -54,8 +84,7 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   SERVICE=$(checkService "Install a service basing on which you'd like to run an application [aws|ngrok|serveo] $(tput setaf 1)(required)$(tput sgr0): ")
   if [[ "$SERVICE" =~ ^(aws)$ ]]; then
     APP_ENV="production"
-    PUBLIC_URL=$(checkDefault "Enter your public DNS (IPv4)
-    > for example: $(tput setaf 2)ec2-***.us-east-2.compute.amazonaws.com$(tput sgr0)
+    PUBLIC_URL=$(checkDefault "Enter your public IP (IPv4)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   elif [[ "$SERVICE" =~ ^(ngrok)$ ]]; then
     NGROK_AUTH=$(checkDefault "Authentication key for Ngrok account $(tput setaf 1)(required)$(tput sgr0): ")
@@ -71,16 +100,16 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
       > $(tput setaf 1)(required)$(tput sgr0): ")
   fi
 
-  AWS_ACCESS_KEY_ID=$(checkDefault "Enter aws access key ID
+  AWS_ACCESS_KEY_ID=$(checkDefault "Enter AWS access key ID
     > for example: $(tput setaf 2)fdf***f5$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
-  AWS_SECRET_ACCESS_KEY=$(checkDefault "Enter aws secret access key
+  AWS_SECRET_ACCESS_KEY=$(checkDefault "Enter AWS secret access key
     > for example: $(tput setaf 2)fs+***Jv$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
-  AWS_CLOUDFRONT_INSTANCES_HOST=$(checkDefault "Enter aws url for the instance configuration
+  AWS_CLOUDFRONT_INSTANCES_HOST=$(checkDefault "Enter AWS URL for the instance configuration
     > for example: $(tput setaf 2)https://***.cloudfront.net$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
-  AWS_BUCKET=$(checkDefault "Enter s3 bucket
+  AWS_BUCKET=$(checkDefault "Enter S3 bucket
     > for example: $(tput setaf 2)my80bots$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
 

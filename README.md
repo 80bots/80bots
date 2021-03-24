@@ -4,7 +4,7 @@
 
 ## Brief information:
 
-  This application is developed for simple local deployment of 80bots application architecture that includes the following repositories and they are added as submodules: 
+  This application is developed for simple local deployment and AWS deployment of 80bots application architecture that includes the following repositories and they are added as submodules: 
 
 ##### Laravel APP (https://github.com/80bots/backend) is intended for:
 
@@ -21,6 +21,28 @@
   - Interaction with API for managing data and services;
   - Reviewing info about users and everything related;
   - Configuring custom scripts and parameters of launching bots and instances on which they will be installed.
+
+## Tl;dr - Quick Start on AWS
+
+  1. Launch a brand new EC2 instance of Ubuntu 20.04. We recommend t3.medium and at least 32GB of space.
+  2. Ensure ports 80 and 8080 are open in the security group.
+  3. Create an S3 bucket. (You'll need the bucket name later).
+  4. Create a CloudFront distribution and assign the S3 bucket. (You'll need the subdomain later).   
+  5. SSH into your EC2 (username is ubuntu).
+  6. Clone this repo:
+```
+git clone https://github.com/80bots/80bots
+```
+  7. Run the shell script:
+```
+cd 80bots
+./deploy-aws-ubuntu.sh
+```
+  8. Simply follow the prompts. Note the username and password at the end.
+  9. You should be able to access your 80bots backend at `{yourIP}/backoffice80` - login with the credentials.
+  10. Once logged in, click on the top right hand corner and click Profile.
+  11. Set your timezone and your preferred Availability Zone.
+  12. You should be able to now launch a demo bot or add your own Puppeteer bot and launch it. If any issues, contact me at francis@80bots.com - good luck!
 
 ## Requirements
 
@@ -81,10 +103,6 @@ docker exec 80bots-backend php artisan db:refresh
 ```
 
   Warning! This action will clear the database and populate it with default values!
-
-## Quick start. 80bots deploy and launching based on AWS.
-
-  It is necessary to have access to Github 80bots repo `https://github.com/80bots` in order to install and launch 80bots.  An account created in aws console is `https://aws.amazon.com/console/`.
   
 #### NOTE: 
   You can run service creation manually following 3-6 points(Setup) as well as using was cli, just runing `{appRoot}/deploy-aws.sh`;
