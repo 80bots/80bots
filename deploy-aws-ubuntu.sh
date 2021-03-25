@@ -32,12 +32,12 @@ if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   curl -sS https://getcomposer.org/installer -o composer-setup.php
   sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
   sudo systemctl status docker
-  sudo ./configure.sh
+
+  ./configure.sh
+
   sudo docker exec 80bots-backend php artisan db:refresh
   sudo docker exec 80bots-backend php artisan migrate
   sudo docker exec 80bots-backend php artisan db:seed --force
-
-  ./configure.sh
 
 elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   exit 0

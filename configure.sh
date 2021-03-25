@@ -106,9 +106,6 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   AWS_SECRET_ACCESS_KEY=$(checkDefault "Enter AWS secret access key
     > for example: $(tput setaf 2)fs+***Jv$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
-  AWS_CLOUDFRONT_INSTANCES_HOST=$(checkDefault "Enter AWS URL for the instance configuration
-    > for example: $(tput setaf 2)https://***.cloudfront.net$(tput sgr0)
-    > $(tput setaf 1)(required)$(tput sgr0): ")
   AWS_BUCKET=$(checkDefault "Enter S3 bucket
     > for example: $(tput setaf 2)my80bots$(tput sgr0)
     > $(tput setaf 1)(required)$(tput sgr0): ")
@@ -124,7 +121,6 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   echo "APP_KEY=$APP_KEY" >> ./.env
   echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> ./.env
   echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> ./.env
-  echo "AWS_CLOUDFRONT_INSTANCES_HOST=$AWS_CLOUDFRONT_INSTANCES_HOST" >> ./.env
   echo "AWS_BUCKET=$AWS_BUCKET" >> ./.env
 
  ./start.sh
