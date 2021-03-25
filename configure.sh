@@ -83,7 +83,7 @@ elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
 
   SERVICE=$(checkService "Install a service basing on which you'd like to run an application [aws|ngrok|serveo] $(tput setaf 1)(required)$(tput sgr0): ")
   if [[ "$SERVICE" =~ ^(aws)$ ]]; then
-    APP_ENV="production"
+    APP_ENV="dev"
     PUBLIC_URL=$(checkDefault "Enter your public IP (IPv4)
     > $(tput setaf 1)(required)$(tput sgr0): ")
   elif [[ "$SERVICE" =~ ^(ngrok)$ ]]; then
