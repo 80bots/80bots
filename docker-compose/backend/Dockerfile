@@ -112,6 +112,9 @@ RUN chmod 700 /var/src/start.sh
 
 # Verbose logging
 RUN echo "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
+RUN echo "php_flag[display_errors] = on">>/usr/local/etc/php-fpm.d/www.conf
+RUN echo "php_admin_value[error_log] = /proc/self/fd/2">>/usr/local/etc/php-fpm.d/www.conf
+RUN echo "php_admin_flag[log_errors] = on">>/usr/local/etc/php-fpm.d/www.conf
 
 # Set API
 WORKDIR /var/www
