@@ -110,6 +110,9 @@ RUN mkdir /var/src
 COPY ./bin/start.sh /var/src/start.sh
 RUN chmod 700 /var/src/start.sh
 
+# Verbose logging
+RUN echo "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
+
 # Set API
 WORKDIR /var/www
 
