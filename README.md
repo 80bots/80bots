@@ -107,54 +107,6 @@ docker exec 80bots-backend php artisan db:refresh
 #### NOTE: 
   You can run service creation manually following 3-6 points(Setup) as well as using was cli, just runing `{appRoot}/deploy-aws.sh`;
   
-#### Setup: 
-
-  1. Sign in to AWS Management Console, select EC2<br/><br/>
-  ![aws-ec2](misc/images/aws_console_ec2.png)<br/><br/>
-  Then, select Key Pair and click `Create Key Pair` button.<br/><br/>
-  ![key-pair](misc/images/key_pair.png)<br/><br/>
-  Set up a name for your key, click create button<br/><br/> 
-  ![create-key-pair](misc/images/create_key_pair.png)<br/><br/>
-  and save it for yourself since it is impossible to restore it in case it's lost.
-  
-  2. Open a terminal on your local workstation, enter `chmod 400 -R {path_to_key}` command (this command is needed for changing access rights to our key)<br/><br/>
-  ![changing-access](misc/images/changing_access.png)<br/><br/>
-  We'll need it for access to our instance. 
-  
-  3. Open CloudFormation in was console (screenshot_5), click "create stack"<br/><br/>
-  ![aws-console-cloudformation](misc/images/aws_console_cloudformation.png)<br/><br/>
-  click `create stack`<br/><br/>
-  ![create-stack](misc/images/create_stack.png)<br/><br/>
-  upload {appRoot}/template.yml template for automatic running all required services (you can find the template in 80bots repo). Click `next`<br/><br/>
-  ![upload-template](misc/images/upload_template.png)<br/><br/>
-  
-  4. Then you need to set up a name for your stack and enter KeyName of the created key. Click `next`<br/><br/>
-  ![stack-details](misc/images/stack_details.png)<br/><br/>
-  
-  5. You can set up required configurations (optional), then click `next`<br/><br/>
-  ![configure-stack](misc/images/configure_stack.png)<br/><br/>
-  
-  6. Review set settings and click `create stack`<br/><br/>
-  ![review](misc/images/review.png)<br/><br/>
-
-  7. On this stage, service creation statuses are displayed<br/><br/>
-  ![status](misc/images/status.png)<br/><br/>
-  
-  #### Important!
-  Due to the fact that currently, the source repository is private and the Github account that interacts with this repository should have two-factor authentication enabled, you should follow the next instruction: 
-  
-  Open a terminal, get to the config file by entering nano `~/.ssh/config` command and enter the following settings: 
-  ```
-  Host your_custom_name
-      ForwardAgent yes
-      User ec2-user
-      Hostname instance_Public_IP
-      IdentityFile absolute_path_to_your_key
-  ```
-  ![config](misc/images/config.png)<br/><br/>
-  ![ip](misc/images/ip.png)<br/><br/>
-  Save changes and now you can get to the instance via SSH by using `ssh your_custom_name` command anytime.
-  
 #### Deployment: 
 
   1. Connect to the instance using `ssh your_custom_name` command<br/><br/>
