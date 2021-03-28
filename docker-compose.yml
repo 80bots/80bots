@@ -24,6 +24,7 @@ services:
       - ./docker-compose/proxy/http-server.template.conf:/etc/nginx/http-server.template.conf
       - ./docker-compose/proxy/src:/etc/nginx/src
       - ./docker-compose/proxy/conf.d:/etc/nginx/conf.d
+      - ./docker-compose/proxy/log:/var/log/nginx
     links:
       - backend
       - ws
