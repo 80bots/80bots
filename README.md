@@ -1,4 +1,4 @@
-![80bots builder](misc/images/80bots-beam-animated-3x.gif)
+![80bots builder](misc/images/80bots-beam-animated-3x-padding.gif)
 
 # 80bots builder
 
