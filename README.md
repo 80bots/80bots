@@ -321,7 +321,7 @@ docker-compose up --build {container_name}
 #### Stop all containers:
 
 ```
-Docker-compose stop
+docker-compose stop
 ```
 
 #### Remove ALL the containers and images (Warning! This command will remove all of your images and containers!):
