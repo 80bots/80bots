@@ -126,7 +126,7 @@ elif [[ "$SERVICE" =~ ^(ngrok)$ ]]; then
   fi
 
 elif [[ "$SERVICE" =~ ^(aws)$ ]]; then
-  docker-compose up --build -d proxy
+  sudo docker-compose up --build -d proxy
 else
   echo "environment SERVICE is not valid"
 fi
