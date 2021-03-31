@@ -17,22 +17,29 @@ ANSWER=$(checkDefault "This script is for deploying 80bots on a brand new, AWS E
 if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   sudo apt-get update
   sudo apt-get install php7.4-cli -y
+
+  # install Docker START
   sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y
-  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
   echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
   sudo apt-get update
   sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose -y
+  # install Docker END
+
   git clone https://github.com/80bots/80bots.git
+
   cd 80bots/
   sudo apt install nodejs -y
   sudo apt install npm -y
   sudo npm install --global yarn
+
   cd ~
   curl -sS https://getcomposer.org/installer -o composer-setup.php
   sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
   sudo systemctl status docker
 
+  cd 80bots/
   ./configure.sh
 
   sudo docker exec 80bots-backend php artisan db:refresh
