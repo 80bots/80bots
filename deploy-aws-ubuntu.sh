@@ -45,6 +45,7 @@ if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   sudo docker exec 80bots-backend php artisan db:refresh
   sudo docker exec 80bots-backend php artisan migrate
   sudo docker exec 80bots-backend php artisan db:seed --force
+  sudo docker exec 80bots-backend php artisan migrate --seed
 
 elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   exit 0
