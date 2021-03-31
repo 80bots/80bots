@@ -47,6 +47,8 @@ if [[ "$ANSWER" =~ ^(yes|y)$ ]]; then
   sudo docker exec 80bots-backend php artisan db:seed --force
   sudo docker exec 80bots-backend php artisan migrate --seed
 
+  echo "Access 80bots here now: http://$(grep PUBLIC_URL .env | cut -d '=' -f2)"/backoffice80
+
 elif [[ "$ANSWER" =~ ^(no|n)$ ]]; then
   exit 0
 fi
