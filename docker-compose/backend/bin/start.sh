@@ -7,8 +7,8 @@ cd /var/www && rm -rf .env && touch .env && chgrp -R www-data .env
 cd /var/www/storage/app && rm -rf scripts
 # Clear existing logs
 cd /var/www && touch storage/logs/cron.log && touch storage/logs/laravel.log && touch storage/logs/supervisor-queue-worker.log
-chmod 775 -R /var/www/storage/logs
-chown -R 1001:www-data /var/www/storage/logs
+chmod 775 -R /var/www/storage/logs /var/www/storage/app
+chown -R 1001:www-data /var/www/storage/logs /var/www/storage/app
 
 echo "APP_KEY=$APP_KEY" >>./.env
 echo "APP_NAME=${APP_NAME:-80bots}" >>./.env
